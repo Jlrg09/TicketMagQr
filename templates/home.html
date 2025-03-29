@@ -1,0 +1,113 @@
+{% extends 'plantilla.html' %}
+
+{% block title %}Inicio{% endblock %}
+{% block body %}
+
+
+<div class="register rounded">
+    <h2 class="display-6">REGISTRO DE USUARIO</h2>
+    <hr>
+    <form id="register" action="">
+        <div class="input-group flex-nowrap mb-3">
+            <span class="input-group-text" id="addon-wrapping"><i class="fa fa-regular fa-user"></i></span>
+            <input type="text" class="form-control" placeholder="Nombre Completo" id="fullname" required>
+        </div>
+
+        <div class="input-group flex-nowrap mb-3">
+            <span class="input-group-text" id="addon-wrapping"><i class="fa fa-regular fa-envelope"></i></span>
+            <input type="email" class="form-control" placeholder="Correo" aria-label="Username"
+                aria-describedby="addon-wrapping" id="email" required>
+        </div>
+
+        <div class="input-group flex-nowrap mb-3">
+            <span class="input-group-text" id="addon-wrapping"><i class="fa fa-regular fa-face-grin-stars"></i></span>
+            <select class="form-control" aria-describedby="addon-wrapping" id="type" required>
+                <option value="normal" selected>Común</option>
+                <option value="vip">VIP</option>
+            </select>
+        </div>
+
+        <div class="input-group flex-nowrap mb-3">
+            <span class="input-group-text" id="addon-wrapping"><i class="fa fa-solid fa-hashtag"></i></span>
+            <input type="number" class="form-control" placeholder="Numero de tickets" id="tickets" value="1" required>
+        </div>
+
+
+        <button type="button" class="btn btn-primary" id="submit"><i class='fa fa-regular fa-paper-plane'></i></button>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    var submit = document.getElementById("submit");
+    console.log(submit);
+
+    const iconPaper = "<i class='fa fa-regular fa-paper-plane'></i>"
+    const iconLock = "<i class='fa fa-solid fa-lock'></i>"
+    const iconLockOpen = "<i class='fa fa-solid fa-lock-open'></i>"
+
+    submit.addEventListener("mouseover", () => {
+        submit.innerHTML = iconPaper + " Enviar";
+        submit.style.transition = "width .2s ease-out";
+        submit.style.width = "150px";
+    });
+
+    submit.addEventListener("mouseout", () => {
+        submit.innerHTML = iconPaper;
+        submit.style.transition = "width .5s ease-out";
+        submit.style.width = "40px";
+    });
+
+    function sendQr(){
+        submit.removeEventListener("click", sendQr)
+        var email = document.getElementById("email");
+        var fullname = document.getElementById("fullname");
+        var tickets = document.getElementById("tickets");
+        var ticket = document.getElementById("type");
+
+        
+
+        fetch("/sendQr", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "email": email.value,
+                "fullname": fullname.value,
+                "tickets": tickets.value,
+                "ticket": ticket.value
+            })
+
+            
+
+
+        })
+
+        
+
+        .then(response => response.json())
+        .then(data => {
+            if(data.response == "success"){
+                
+                fullname.value = "";
+                email.value = "";
+                tickets.value = 1;
+            }
+
+            alert(data.message)
+            
+        })
+
+        .catch(error => {
+            alert("Se ha presentado un error, revise la consola para analizar más a detalle");
+            console.error(error);
+        })
+    }
+
+    submit.addEventListener("click", sendQr)
+</script>
+{% endblock %}

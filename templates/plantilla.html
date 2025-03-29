@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
+	<link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}">
+	<script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+	<script src="{{url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
+	<script src="{{url_for('static', filename='js/bootstrap.esm.min.js')}}"></script>
+	<script src="{{url_for('static', filename='icons/js/all.min.js')}}"></script>
+	<title>{% block title %}{% endblock %}</title>
+</head>
+
+<body class="bg-terceary">
+	<header>
+		<nav class="navbar shadow-lg">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="/">
+					Syste+
+				</a>
+				<button id="mode" class="btn">
+					<i class="fa fa-solid" id="iconMode"></i>
+				</button>
+			</div>
+
+
+		</nav>
+	</header>
+
+
+
+	<main class="d-flex">
+		{% block body %}
+
+		{% endblock %}
+
+	</main>
+
+
+
+</body>
+<script>
+
+	var body = document.querySelector("body");
+	var nav = document.querySelector("nav");
+	var roundeds = document.querySelectorAll(".rounded");
+	var hs = document.querySelectorAll("h2");
+	var mode = document.getElementById("mode");
+	var iconMode = document.getElementById("iconMode");
+	var colorPreference = null;
+
+	try {
+		colorPreference = localStorage.getItem("colorPreference");
+	}
+	catch (error) {
+		localStorage.setItem("colorPreference", "white");
+		colorPreference = localStorage.getItem("colorPreference");
+	}
+
+	console.log(colorPreference);
+
+	function updateMode(){
+
+		if (colorPreference == "white") {
+			body.className = "bg-light";
+			nav.className += " navbar-light bg-light"
+
+			roundeds.forEach(rounded => {
+				rounded.className += " bg-light shadow-lg";
+
+			});
+
+			hs.forEach(h => {
+				h.className += "black";
+			})
+
+			mode.className += " btn-light";
+			iconMode.className += " fa-moon";
+
+		} else if (colorPreference == "black") {
+			body.className = "bg-dark";
+			nav.className += " navbar-dark bg-dark"
+
+			roundeds.forEach(rounded => {
+				rounded.className += " bg-dark";
+				rounded.style = 'box-shadow : 0 0 10px rgba(255, 252, 221, 0.849);';
+			});
+
+			hs.forEach(h => {
+				h.style.color += "white";
+			})
+
+			mode.className += " btn-dark";
+			iconMode.className += " fa-sun";
+		}
+	}
+
+	mode.addEventListener("click", () => {
+		console.log("Hollllla");
+		colorPreference = localStorage.getItem("colorPreference");
+		let color;
+		if(colorPreference == "white"){
+			color = "black";
+		}else{
+			color = "white";
+		}
+
+		localStorage.setItem("colorPreference", color)
+		window.location.reload()
+	})
+
+	updateMode()
+
+</script>
+{% block script %}
+
+{% endblock %}
+
+</html>

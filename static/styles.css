@@ -1,0 +1,48 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+main{
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    min-width: 250px;
+}
+
+main > div{
+    margin: 20px;
+}
+
+.register{
+    flex: 1;
+    text-align: center;
+    padding: 20px;
+}
+
+.login{
+    flex: 2;
+    padding: 20px;
+    text-align: center;
+}
+
+#login > .input-group > input{
+    max-width: 400px;
+}
+
+#login > .input-group{
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#submit, #submitLogin{
+    width: 40px;
+    height: 40px;
+}
+
+.container-sm{
+    padding: 20px;
+    box-shadow :  0 0 10px rgba(255, 252, 221, 0.849);
+}

@@ -1,0 +1,48 @@
+{% extends 'plantilla.html' %}
+
+{% block title %}Login{% endblock %}
+{% block body %}
+
+<div class="login rounded">
+    <h2 class="display-6">Inicio de sesión</h2>
+    <hr>
+    <form id="login" method="post" action="/login">
+        <div class="input-group flex-nowrap mb-3">
+            <span class="input-group-text" id="addon-wrapping"><i class="fa fa-solid fa-envelope"></i></span>
+            <input type="email" class="form-control" placeholder="Correo institucional" aria-label="Username"
+                aria-describedby="addon-wrapping" required name="email">
+        </div>
+        <div class="input-group flex-nowrap mb-3">
+            <span class="input-group-text" id="addon-wrapping"><i class="fa fa-solid fa-lock-open"></i></span>
+            <input type="password" class="form-control" placeholder="Contraseña" aria-label="Username"
+                aria-describedby="addon-wrapping" required name="password">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="submitLogin"><i class='fa fa-solid fa-lock'></i></button>
+    </form>
+
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+
+    const iconPaper = "<i class='fa fa-regular fa-paper-plane'></i>"
+    const iconLock = "<i class='fa fa-solid fa-lock'></i>"
+    const iconLockOpen = "<i class='fa fa-solid fa-lock-open'></i>"
+
+    var lock = document.getElementById("submitLogin");
+
+    lock.addEventListener("mouseover", () => {
+        lock.innerHTML = iconLockOpen;
+        lock.style.transition = "width .4s ease-out";
+    });
+
+    lock.addEventListener("mouseout", () => {
+        lock.innerHTML = iconLock;
+        lock.style.transition = "width .5s ease-out";
+    });
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,7 @@
+/env
+.env
+/static/css
+/static/icons
+/__pycache__
+archivo.pdf
+database.db
