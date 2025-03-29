@@ -16,17 +16,18 @@
 <body class="bg-terceary">
 	<header>
 		<nav class="navbar shadow-lg">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="/">
-					Syste+
-				</a>
-				<button id="mode" class="btn">
-					<i class="fa fa-solid" id="iconMode"></i>
-				</button>
+			<div class="container-fluid d-flex justify-content-between align-items-center">
+				<a class="navbar-brand" href="/">Syste+</a>
+				{% if 'valid' in session %}
+					<nav class="navbar shadow-lg">
+						<div class="container-fluid">
+							<a href="/logout" class="btn btn-danger ms-auto">Cerrar sesión <i class="fa fa-sign-out-alt"></i></a>
+						</div>
+					</nav>
+				{% endif %}
 			</div>
-
-
 		</nav>
+
 	</header>
 
 
