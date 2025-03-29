@@ -12,7 +12,7 @@ import os
 from pdfGeneratorCh import Generator
 
 
-# Cargar variables de entorno ANTES de configurar Flask
+
 load_dotenv()
 
 print("MAIL_USERNAME:", getenv('MAIL_USERNAME'))
@@ -21,16 +21,16 @@ print("MAIL_PASSWORD:", getenv('MAIL_PASSWORD'))
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = getenv('SECRET_KEY')
-
-# Configuración correcta de Flask-Mail
+app.config['SESSION_PERMANENT'] = False
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False  # ← Este estaba mal antes
+app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = getenv('MAIL_PASSWORD')
 
-mail = Mail(app)  # Inicializar Flask-Mail correctamente
+mail = Mail(app) 
 
 def validateSession():
     return 'valid' in cloud
@@ -91,9 +91,14 @@ def login():
 
         if data['email'] == 'syste+@gmail.com' and data['password'] == 'syste+2024':
             cloud['valid'] = True
+            cloud.permanent = False
             return redirect("/home")
     return redirect('/')
 
+@app.route('/logout')
+def logout():
+    cloud.clear() 
+    return redirect('/')
 
 @app.route("/copy/database")
 def copyDatabase():
