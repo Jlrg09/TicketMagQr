@@ -15,13 +15,12 @@
 
         <div class="input-group flex-nowrap mb-3">
             <span class="input-group-text" id="addon-wrapping"><i class="fa fa-regular fa-envelope"></i></span>
-            <input type="email" class="form-control" placeholder="Correo" aria-label="Username"
-                aria-describedby="addon-wrapping" id="email" required>
+            <input type="email" class="form-control" placeholder="Correo" id="email" required>
         </div>
 
         <div class="input-group flex-nowrap mb-3">
             <span class="input-group-text" id="addon-wrapping"><i class="fa fa-regular fa-face-grin-stars"></i></span>
-            <select class="form-control" aria-describedby="addon-wrapping" id="type" required>
+            <select class="form-control" id="type" required>
                 <option value="normal" selected>Común</option>
                 <option value="vip">VIP</option>
             </select>
@@ -32,82 +31,82 @@
             <input type="number" class="form-control" placeholder="Numero de tickets" id="tickets" value="1" required>
         </div>
 
-
         <button type="button" class="btn btn-primary" id="submit"><i class='fa fa-regular fa-paper-plane'></i></button>
     </form>
 </div>
-
+<!-- Modal de carga -->
+<div id="loading-modal" style="display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0, 0, 0, 0.5); 
+    justify-content: center; 
+    align-items: center;">
+    <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+        <p>Enviando boletas, por favor espere...</p>
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block script %}
 
 <script>
-    var submit = document.getElementById("submit");
-    console.log(submit);
+    document.addEventListener("DOMContentLoaded", function () {
+        var submit = document.getElementById("submit");
+        var loadingModal = document.getElementById("loading-modal");
 
-    const iconPaper = "<i class='fa fa-regular fa-paper-plane'></i>"
-    const iconLock = "<i class='fa fa-solid fa-lock'></i>"
-    const iconLockOpen = "<i class='fa fa-solid fa-lock-open'></i>"
+        submit.addEventListener("mouseover", () => {
+            submit.innerHTML = "<i class='fa fa-regular fa-paper-plane'></i> Enviar";
+            submit.style.width = "150px";
+        });
 
-    submit.addEventListener("mouseover", () => {
-        submit.innerHTML = iconPaper + " Enviar";
-        submit.style.transition = "width .2s ease-out";
-        submit.style.width = "150px";
-    });
+        submit.addEventListener("mouseout", () => {
+            submit.innerHTML = "<i class='fa fa-regular fa-paper-plane'></i>";
+            submit.style.width = "40px";
+        });
 
-    submit.addEventListener("mouseout", () => {
-        submit.innerHTML = iconPaper;
-        submit.style.transition = "width .5s ease-out";
-        submit.style.width = "40px";
-    });
+        function sendQr() {
+            submit.removeEventListener("click", sendQr);
+            submit.disabled = true;
+            loadingModal.style.display = "flex";
 
-    function sendQr(){
-        submit.removeEventListener("click", sendQr)
-        var email = document.getElementById("email");
-        var fullname = document.getElementById("fullname");
-        var tickets = document.getElementById("tickets");
-        var ticket = document.getElementById("type");
+            var email = document.getElementById("email").value;
+            var fullname = document.getElementById("fullname").value;
+            var tickets = document.getElementById("tickets").value;
+            var ticket = document.getElementById("type").value;
 
-        
-
-        fetch("/sendQr", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "email": email.value,
-                "fullname": fullname.value,
-                "tickets": tickets.value,
-                "ticket": ticket.value
+            fetch("/sendQr", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ "email": email, "fullname": fullname, "tickets": tickets, "ticket": ticket })
             })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.response === "success") {
+                    document.getElementById("fullname").value = "";
+                    document.getElementById("email").value = "";
+                    document.getElementById("tickets").value = 1;
+                }
+            })
+            .catch(error => {
+                alert("Se ha presentado un error");
+                console.error(error);
+            })
+            .finally(() => {
+                loadingModal.style.display = "none";
+                submit.disabled = false;
+                submit.addEventListener("click", sendQr);
+            });
+        }
 
-            
-
-
-        })
-
-        
-
-        .then(response => response.json())
-        .then(data => {
-            if(data.response == "success"){
-                
-                fullname.value = "";
-                email.value = "";
-                tickets.value = 1;
-            }
-
-            alert(data.message)
-            
-        })
-
-        .catch(error => {
-            alert("Se ha presentado un error, revise la consola para analizar más a detalle");
-            console.error(error);
-        })
-    }
-
-    submit.addEventListener("click", sendQr)
+        submit.addEventListener("click", sendQr);
+    });
 </script>
+
 {% endblock %}
