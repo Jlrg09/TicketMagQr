@@ -3,7 +3,6 @@ import bcrypt
 
 password = "1207311309Fran"
 
-# Hashear solo antes de insertar
 hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 nuevo_usuario = Usuario(email="joseromerolg@unimagdalena.edu.co", password=hashed_password)
@@ -12,6 +11,5 @@ session_credenciales.commit()
 
 print("Usuario creado con éxito")
 
-# Verificar qué se guardó en la BD
 usuario = session_credenciales.query(Usuario).filter(Usuario.email == "joseromerolg@unimagdalena.edu.co").first()
 print("Contraseña almacenada en la BD:", usuario.password)

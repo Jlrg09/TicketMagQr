@@ -13,7 +13,7 @@ class Generator:
     def create_pdf(self):
         cuadricule = canvas.Canvas("archivo.pdf", pagesize=letter)
         salt = 0
-        os.makedirs("qrs", exist_ok=True)  # Asegurar existencia del directorio
+        os.makedirs("qrs", exist_ok=True)  
 
         for i in range(1, self.qrs + 1):
             num = self.generate_num(i)
