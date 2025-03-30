@@ -1,29 +1,44 @@
-from sqlalchemy import String, Boolean, Column, Integer
-from sqlalchemy import create_engine
+import bcrypt
+from sqlalchemy import create_engine, Column, String, Integer, Boolean
 from sqlalchemy.orm import sessionmaker, declarative_base
-from uuid import uuid4
 
-url = "sqlite:///database.db"
 
-engine = create_engine(url)
+# Base de datos para códigos QR
+engine_codigos = create_engine("sqlite:///codigos.db")
+SessionCodigos = sessionmaker(bind=engine_codigos)
+session_codigos = SessionCodigos()
+BaseCodigos = declarative_base()
 
-Session = sessionmaker(bind=engine)
-session = Session()
+# Base de datos para credenciales
+engine_credenciales = create_engine("sqlite:///credenciales.db")
+SessionCredenciales = sessionmaker(bind=engine_credenciales)
+session_credenciales = SessionCredenciales()
+BaseCredenciales = declarative_base()
 
-Base = declarative_base()
-
-class Codigo(Base):
-
+# Definir modelos
+class Codigo(BaseCodigos):
     __tablename__ = "Codigos"
+    boleto = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(String, nullable=False, unique=True)
+    usado = Column(Boolean, nullable=False, default=False)
+    vip = Column(Boolean, nullable=False, default=False)
 
-    boleto = Column(Integer, nullable=False, primary_key=True ,autoincrement=True)
-    id = Column(String, nullable= False)
-    usado = Column(Boolean, nullable=False)
-    vip = Column(Boolean, nullable = False)
-    
+class Usuario(BaseCredenciales):
+    __tablename__ = "Usuarios"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    email = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
 
-    def __init__(self, vip=False):
-        self.id = str(uuid4())
-        self.usado = False
-        self.boleto = session.query(Codigo).count() + 1
-        self.vip = vip
+    def __init__(self, email, password):
+        # Solo hashear si la contraseña no está en formato bcrypt
+        if not password.startswith("$2b$"):
+            password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
+        print(f"Contraseña antes de guardar: {password}")  # Depuración
+        self.email = email
+        self.password = password
+
+
+# Crear las tablas si no existen
+BaseCodigos.metadata.create_all(engine_codigos)
+BaseCredenciales.metadata.create_all(engine_credenciales)

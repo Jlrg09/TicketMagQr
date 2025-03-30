@@ -1,16 +1,18 @@
-from flask import Flask, render_template, redirect, jsonify, flash, send_file, request
-from os import getenv
-from database import *
-from datetime import timedelta, datetime
-from flask_mail import Mail
-from mailManager import sendMessage
-from dotenv import load_dotenv
-from flask import session as cloud
 import os
+import bcrypt
+from flask import Flask, render_template, redirect, request, flash, jsonify, send_file
+from flask import session as cloud
+from flask_mail import Mail
+from werkzeug.security import check_password_hash
+from bcrypt import checkpw
+from os import getenv
+from dotenv import load_dotenv
+from datetime import timedelta, datetime
 
-
+from database import session_credenciales, session_codigos, Usuario, Codigo
+from mailManager import sendMessage
+from database import BaseCodigos, BaseCredenciales, engine_codigos, engine_credenciales
 from pdfGeneratorCh import Generator
-
 
 
 load_dotenv()
@@ -69,12 +71,12 @@ def generar():
 @app.route("/scan/<string:qr>")
 def verifyQr(qr):
 
-    code = session.query(Codigo).filter(Codigo.id == qr).first()
+    code = session_codigos.query(Codigo).filter(Codigo.id == qr).first()
 
     if code != None and code.usado == False:
         code.usado = True
-        session.add(code)
-        session.commit()
+        session_codigos.add(code)
+        session_codigos.commit()
 
         message = f"Boleto #{code.boleto} normal, acceso permitido" if code.vip == False else f"Boleto #{code.boleto} V.I.P dile al cliente que reclame su extra"
 
@@ -85,15 +87,26 @@ def verifyQr(qr):
 
 @app.route('/login', methods=['POST'])
 def login():
-
     if request.method == 'POST':
         data = request.form
+        user = session_credenciales.query(Usuario).filter(Usuario.email == data['email']).first()
 
-        if data['email'] == 'syste+@gmail.com' and data['password'] == 'syste+2024':
-            cloud['valid'] = True
-            cloud.permanent = False
-            return redirect("/home")
+        if user:
+            print("Contraseña ingresada:", data['password'])
+            print("Contraseña en BD:", user.password)
+            
+            # Comparar usando bcrypt.checkpw
+            if bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
+                print("¡Coinciden!")
+                cloud['valid'] = True
+                cloud.permanent = False
+                return redirect("/home")
+            else:
+                print("No coinciden")
+
     return redirect('/')
+
+
 
 @app.route('/logout')
 def logout():
@@ -110,6 +123,7 @@ def copyDatabase():
         
 if __name__ == "__main__":
     load_dotenv()
-    Base.metadata.create_all(engine)
+    BaseCodigos.metadata.create_all(engine_codigos)
+    BaseCredenciales.metadata.create_all(engine_credenciales)
     mail.init_app(app)
     app.run(debug=True, host="0.0.0.0", port=5000, load_dotenv=True)
