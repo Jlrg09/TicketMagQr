@@ -3,7 +3,7 @@ from database import session_credenciales, Usuario, BaseCredenciales, engine_cre
 
 admin_email = "joseromerolg@unimagdalena.edu.co"
 admin_password = "1207311309Fran"
-admin_code = "admin123"  
+admin_code = "123"  
 
 BaseCredenciales.metadata.create_all(engine_credenciales)
 

@@ -99,7 +99,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="passwordConfig" class="form-label">Clave de aplicación</label>
-                        <input type="password" class="form-control" id="passwordConfig" required>
+                        <input type="password" class="form-control" id="passwordConfig">
                     </div>
                     <div class="mb-3">
                         <label for="emailSubject" class="form-label">Asunto del correo</label>
@@ -110,6 +110,64 @@
                         <textarea class="form-control" id="emailBody" rows="6" required></textarea>
                         <small class="text-muted">Usa {name} donde quieras que aparezca el nombre del cliente.</small>
                     </div>
+                    <div class="card mt-4">
+                        <div class="card-header">
+                          <h5>Plantillas de Boletas</h5>
+                        </div>
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <h6>Plantilla Normal</h6>
+                              <form id="formPlantillaNormal" enctype="multipart/form-data">
+                                <input type="hidden" name="tipo" value="normal">
+                                <div class="form-group">
+                                  <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="plantillaNormal" name="file" accept=".png,.jpg">
+                                  </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-2">Subir Plantilla Normal</button>
+                              </form>
+                            </div>
+                            <div class="col-md-6">
+                              <h6>Plantilla VIP</h6>
+                              <form id="formPlantillaVIP" enctype="multipart/form-data">
+                                <input type="hidden" name="tipo" value="vip">
+                                <div class="form-group">
+                                  <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="plantillaVIP" name="file" accept=".png,.jpg">
+                                  </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-2">Subir Plantilla VIP</button>
+                              </form>
+                            </div>
+                          </div>
+                          <div class="row mt-3">
+                            <div class="col-12">
+                              <a href="/admin/Descargar_plantilla" class="btn btn-secondary">Descargar Plantilla de Ejemplo</a>
+                            </div>
+                          </div>
+                          <div class="row mt-3">
+                            <div class="col-md-6">
+                              <div class="card">
+                                <div class="card-header">Plantilla Normal Actual</div>
+                                <div class="card-body text-center">
+                                  <img id="imgPlantillaNormal" src="/static/plantillas/normal.png" class="img-fluid" style="max-height: 200px;">
+                                  <p id="textPlantillaNormal" class="mt-2"></p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="card">
+                                <div class="card-header">Plantilla VIP Actual</div>
+                                <div class="card-body text-center">
+                                  <img id="imgPlantillaVIP" src="/static/plantillas/vip.png" class="img-fluid" style="max-height: 200px;">
+                                  <p id="textPlantillaVIP" class="mt-2"></p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     <button type="submit" class="btn btn-primary">Guardar Configuración</button>
                 </form>
             </div>
