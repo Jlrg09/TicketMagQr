@@ -1,40 +1,384 @@
 {% extends 'plantilla.html' %}
 
-{% block title %}Inicio{% endblock %}
+{% block title %}Panel de Vendedor{% endblock %}
+
 {% block body %}
+<div class="container my-4">
+    <!-- Contenido dinámico por pestañas -->
+    <div class="tab-content" id="sellerTabContent">
+        <!-- Panel de Venta de Boletos -->
+        <div class="tab-pane fade show active" id="vender" role="tabpanel">
+            <div class="page-header fadeIn mb-4">
+                <h1>Venta de Boletos</h1>
+                <div>
+                    <button id="refresh-stats-btn" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-clockwise"></i> Actualizar Datos
+                    </button>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Card informativa -->
+                <div class="col-lg-4 mb-4">
+                    <div class="card border-0 bg-gradient-primary h-100 text-white">
+                        <div class="card-body position-relative overflow-hidden">
+                            <div class="icon-background">
+                                <i class="bi bi-ticket-perforated-fill"></i>
+                            </div>
+                            <h3 class="mb-3">Venta de Boletos</h3>
+                            <p class="mb-4">Completa el formulario para generar y enviar boletos a tus clientes.</p>
+                            <div class="ticket-info mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="info-icon me-2">
+                                        <i class="bi bi-check2-circle"></i>
+                                    </div>
+                                    <div>Acceso rápido al evento</div>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="info-icon me-2">
+                                        <i class="bi bi-qr-code"></i>
+                                    </div>
+                                    <div>Código QR único por boleto</div>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="info-icon me-2">
+                                        <i class="bi bi-envelope-check"></i>
+                                    </div>
+                                    <div>Envío automático por correo</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Formulario de registro -->
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-success text-white d-flex align-items-center">
+                            <i class="bi bi-person-plus-fill me-2 fs-4"></i>
+                            <h4 class="mb-0">Registro de Usuario</h4>
+                        </div>
+                        <div class="card-body">
+                            <form id="register" action="">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fullname" class="form-label">Nombre Completo</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                                            <input type="text" class="form-control" placeholder="Nombre del Cliente" id="fullname" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">Correo Electrónico</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                            <input type="email" class="form-control" placeholder="email@ejemplo.com" id="email" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="type" class="form-label">Tipo de Boleto</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-ticket-perforated"></i></span>
+                                            <select class="form-select" id="type" required>
+                                                <option value="normal" selected>Boleto Común</option>
+                                                <option value="vip">Boleto VIP</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="tickets" class="form-label">Cantidad de Boletos</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-123"></i></span>
+                                            <input type="number" class="form-control" placeholder="Número de boletos" id="tickets" value="1" min="1" required>
+                                        </div>
+                                    </div>
+                                </div>
 
-
-<div class="register rounded">
-    <h2 class="display-6">REGISTRO DE USUARIO</h2>
-    <hr>
-    <form id="register" action="">
-        <div class="input-group flex-nowrap mb-3">
-            <span class="input-group-text" id="addon-wrapping"><i class="fa fa-regular fa-user"></i></span>
-            <input type="text" class="form-control" placeholder="Nombre Completo" id="fullname" required>
+                                <div class="d-grid mt-4">
+                                    <button type="button" id="submit" class="btn btn-success btn-lg" style="display: block !important; width: 100%; padding: 15px; white-space: nowrap !important; overflow: visible !important; text-align: center !important;">
+                                        <i class="bi bi-send-fill me-2"></i>
+                                        <span style="display: inline-block !important;">Enviar Boletos</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Estadísticas rápidas -->
+                    <div class="card border-0 bg-gradient-light shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Estadísticas Rápidas</h5>
+                            <div class="row text-center mt-3">
+                                <div class="col-md-4">
+                                    <div class="quick-stat">
+                                        <div class="stat-icon bg-primary text-white">
+                                            <i class="bi bi-ticket"></i>
+                                        </div>
+                                        <div class="stat-label">Total Boletos</div>
+                                        <div class="stat-value" id="total-tickets">-</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="quick-stat">
+                                        <div class="stat-icon bg-success text-white">
+                                            <i class="bi bi-check-circle"></i>
+                                        </div>
+                                        <div class="stat-label">Boletos Usados</div>
+                                        <div class="stat-value" id="used-tickets">-</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="quick-stat">
+                                        <div class="stat-icon bg-warning text-dark">
+                                            <i class="bi bi-star"></i>
+                                        </div>
+                                        <div class="stat-label">Boletos VIP</div>
+                                        <div class="stat-value" id="vip-tickets">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="input-group flex-nowrap mb-3">
-            <span class="input-group-text" id="addon-wrapping"><i class="fa fa-regular fa-envelope"></i></span>
-            <input type="email" class="form-control" placeholder="Correo" id="email" required>
+        
+        <!-- Panel de Estadísticas -->
+        <div class="tab-pane fade" id="estadisticas" role="tabpanel">
+            <div class="page-header fadeIn mb-4">
+                <h1>Estado de Boletos</h1>
+                <div>
+                    <button id="refresh-stats-dashboard" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-clockwise"></i> Actualizar Estadísticas
+                    </button>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card primary">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span class="icon">
+                                    <i class="bi bi-ticket-perforated"></i>
+                                </span>
+                                <h6>Total Boletos</h6>
+                                <h3 id="total-tickets-dash">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card success">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span class="icon">
+                                    <i class="bi bi-check-circle"></i>
+                                </span>
+                                <h6>Boletos Usados</h6>
+                                <h3 id="used-tickets-dash">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card warning">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span class="icon">
+                                    <i class="bi bi-star"></i>
+                                </span>
+                                <h6>Boletos VIP</h6>
+                                <h3 id="vip-tickets-dash">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabla de boletos recientes -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list-check me-2"></i> Boletos Recientes</h5>
+                    <div class="input-group" style="max-width: 300px;">
+                        <input type="text" id="search-tickets" class="form-control" placeholder="Buscar boleto, email...">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Email</th>
+                                    <th>Tipo</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tickets-table">
+                                <tr>
+                                    <td colspan="6" class="text-center py-3">Cargando datos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="input-group flex-nowrap mb-3">
-            <span class="input-group-text" id="addon-wrapping"><i class="fa fa-regular fa-face-grin-stars"></i></span>
-            <select class="form-control" id="type" required>
-                <option value="normal" selected>Común</option>
-                <option value="vip">VIP</option>
-            </select>
+        
+        <!-- Panel de Escáner QR -->
+        <div class="tab-pane fade" id="scanner" role="tabpanel">
+            <div class="page-header fadeIn mb-4">
+                <h1>Escáner de QR</h1>
+                <div>
+                    <a href="/qr-scanner" class="btn btn-primary">
+                        <i class="bi bi-qrcode"></i> Abrir Escáner
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body position-relative overflow-hidden">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="mb-3 text-primary"><i class="bi bi-qrcode me-2"></i> Escáner de QR</h4>
+                            <p class="lead">Verifica y gestiona el acceso de boletos mediante códigos QR</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Escanea códigos QR de boletos</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Verifica validez y estado de los boletos</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Marca boletos como usados</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Consulta información detallada de cada boleto</li>
+                            </ul>
+                            <a href="/qr-scanner" class="btn btn-primary btn-lg mt-3 pulse">
+                                <i class="bi bi-qrcode me-2"></i> Abrir Escáner QR
+                            </a>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-qrcode icon-bg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Últimos escaneos -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i> Escaneos Recientes</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Boleto</th>
+                                    <th>Email</th>
+                                    <th>Tipo</th>
+                                    <th>Estado</th>
+                                    <th>Fecha de Uso</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-scans">
+                                <tr>
+                                    <td colspan="6" class="text-center py-3">No hay datos de escaneos recientes</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="input-group flex-nowrap mb-3">
-            <span class="input-group-text" id="addon-wrapping"><i class="fa fa-solid fa-hashtag"></i></span>
-            <input type="number" class="form-control" placeholder="Numero de tickets" id="tickets" value="1" required>
-        </div>
-
-        <button type="button" class="btn btn-primary" id="submit"><i class='fa fa-regular fa-paper-plane'></i></button>
-    </form>
+    </div>
 </div>
 
+<!-- Modal para detalles del boleto -->
+<div class="modal fade" id="ticketDetailModal" tabindex="-1" aria-labelledby="ticketDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ticketDetailModalLabel">
+                    <i class="bi bi-ticket-perforated me-2"></i> Detalles del Boleto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="ticket-details">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Boleto:</strong>
+                                <span id="modal-boleto">-</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>ID:</strong>
+                                <span id="modal-id">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Tipo:</strong>
+                                <span id="modal-tipo">-</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Estado:</strong>
+                                <span id="modal-estado">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="detail-item">
+                                <strong>Email:</strong>
+                                <span id="modal-email">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Fecha Creación:</strong>
+                                <span id="modal-fecha-creacion">-</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Fecha Uso:</strong>
+                                <span id="modal-fecha-uso">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="detail-item">
+                                <strong>Vendedor:</strong>
+                                <span id="modal-vendedor">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
 <div id="loading-modal" style="display: none; 
     position: fixed; 
     top: 0; 
@@ -42,43 +386,545 @@
     width: 100%; 
     height: 100%; 
     background: rgba(0, 0, 0, 0.5); 
+    z-index: 1050;
     justify-content: center; 
     align-items: center;">
-    <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
-        <p>Enviando boletas, por favor espere...</p>
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Cargando...</span>
+    <div class="card shadow-lg border-0" style="width: 300px;">
+        <div class="card-body text-center p-4">
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <h5>Enviando boletos</h5>
+            <p class="text-muted mb-0">Por favor espere un momento...</p>
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block script %}
+<style>
+    /* Estilos del panel del vendedor */
+    .page-header {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 6px 15px -3px rgba(0, 0, 0, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .stats-card {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 1.5rem;
+        height: 100%;
+        box-shadow: 0 6px 15px -3px rgba(0, 0, 0, 0.08);
+        border-left: 4px solid #3a86ff;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    }
+    
+    .stats-card .icon {
+        font-size: 2rem;
+        padding: 15px;
+        border-radius: 50%;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+    
+    .stats-card.primary {
+        border-left-color: #3a86ff;
+    }
+    .stats-card.primary .icon {
+        background-color: #e9f2ff;
+        color: #3a86ff;
+    }
+    
+    .stats-card.success {
+        border-left-color: #2ecc71;
+    }
+    .stats-card.success .icon {
+        background-color: rgba(46, 204, 113, 0.15);
+        color: #2ecc71;
+    }
+    
+    .stats-card.warning {
+        border-left-color: #f39c12;
+    }
+    .stats-card.warning .icon {
+        background-color: rgba(243, 156, 18, 0.15);
+        color: #f39c12;
+    }
+    
+    .stats-card h6 {
+        color: #718096;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-card h3 {
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 0;
+    }
+    
+    /* Animaciones */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fadeIn {
+        animation: fadeIn 0.5s ease forwards;
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(58, 134, 255, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(58, 134, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(58, 134, 255, 0); }
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    /* Modo oscuro */
+    .dark-mode .page-header,
+    .dark-mode .stats-card,
+    .dark-mode .card {
+        background-color: #2d3748;
+        border-color: #3a465a;
+    }
+    
+    .dark-mode .stats-card h6 {
+        color: #a0aec0;
+    }
+    
+    .dark-mode .stats-card h3,
+    .dark-mode h1,
+    .dark-mode h4,
+    .dark-mode h5 {
+        color: #e2e8f0;
+    }
+    
+    .dark-mode .card-header.bg-light {
+        background-color: #374151 !important;
+        color: #e5e7eb;
+    }
+    
+    .dark-mode .table th {
+        background-color: #374151;
+        color: #e5e7eb;
+    }
+    
+    .dark-mode .table td {
+        border-color: #4b5563;
+        color: #e5e7eb;
+    }
+    
+    .dark-mode .table-hover tbody tr:hover {
+        background-color: #374151;
+    }
+    
+    .icon-bg {
+        font-size: 8rem;
+        opacity: 0.07;
+        position: absolute;
+        right: 20px;
+        bottom: -20px;
+    }
+    
+    /* Estilos para el modal de detalles */
+    .ticket-details .detail-item {
+        margin-bottom: 10px;
+    }
+    
+    .ticket-details .detail-item strong {
+        min-width: 120px;
+        display: inline-block;
+    }
+
+    /* Estilos mejorados para el botón de envío */
+    #submit {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+    
+    #submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(46, 204, 113, 0.3);
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+    
+    #submit:active {
+        transform: translateY(1px);
+        background-color: #1e7e34;
+        border-color: #1c7430;
+    }
+
+    /* Estilos para los inputs */
+    .input-group-text {
+        border-radius: 6px 0 0 6px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 0 6px 6px 0;
+        border: 1px solid #dee2e6;
+        padding: 0.6rem 1rem;
+        transition: all 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #3a86ff;
+        box-shadow: 0 0 0 0.25rem rgba(58, 134, 255, 0.25);
+    }
+    
+    .dark-mode .input-group-text {
+        background-color: #374151;
+        color: #e5e7eb;
+        border-color: #4b5563;
+    }
+    
+    .dark-mode .form-control, 
+    .dark-mode .form-select {
+        background-color: #2d3748;
+        color: #e5e7eb;
+        border-color: #4b5563;
+    }
+    
+    /* Nuevos estilos para la tarjeta informativa */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #3a86ff 0%, #4dabff 100%);
+        color: white;
+    }
+    
+    .bg-gradient-light {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    .dark-mode .bg-gradient-light {
+        background: linear-gradient(135deg, #2d3748 0%, #374151 100%);
+    }
+    
+    .icon-background {
+        position: absolute;
+        bottom: -20px;
+        right: -20px;
+        font-size: 8rem;
+        opacity: 0.1;
+        transform: rotate(-10deg);
+    }
+    
+    .info-icon {
+        width: 30px;
+        height: 30px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .ticket-info {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 15px;
+    }
+    
+    /* Estadísticas rápidas */
+    .quick-stat {
+        padding: 10px;
+        transition: all 0.3s;
+    }
+    
+    .quick-stat:hover {
+        transform: translateY(-3px);
+    }
+    
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        font-size: 1.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .dark-mode .stat-label {
+        color: #a0aec0;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 5px;
+    }
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var submit = document.getElementById("submit");
-        var loadingModal = document.getElementById("loading-modal");
+        // Variables globales
+        const submit = document.getElementById("submit");
+        const loadingModal = document.getElementById("loading-modal");
+        const submitText = document.querySelector(".submit-text");
+        
+        // Configurar navegación por pestañas desde la barra
+        const tabMapping = {
+            'nav-vender': 'vender',
+            'nav-estadisticas': 'estadisticas',
+            'nav-scanner': 'scanner'
+        };
 
-        submit.addEventListener("mouseover", () => {
-            submit.innerHTML = "<i class='fa fa-regular fa-paper-plane'></i> Enviar";
-            submit.style.width = "150px";
+        // Agregar elementos de navegación al navbar si no existen
+        const navbar = document.querySelector('.navbar-nav');
+        
+        if (navbar && !document.querySelector('#nav-vender')) {
+            // Crear elementos de navegación
+            const navItems = [
+                { id: 'vender', icon: 'bi-tag-fill', text: 'Vender Boletos' },
+                { id: 'estadisticas', icon: 'bi-bar-chart-fill', text: 'Estadísticas' },
+                { id: 'scanner', icon: 'bi-qrcode', text: 'Escáner QR' }
+            ];
+            
+            navItems.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'nav-item';
+                
+                const link = document.createElement('a');
+                link.className = index === 0 ? 'nav-link active' : 'nav-link';
+                link.id = 'nav-' + item.id;
+                link.href = '#' + item.id;
+                link.innerHTML = `<i class="bi ${item.icon}"></i> ${item.text}`;
+                
+                li.appendChild(link);
+                navbar.appendChild(li);
+                
+                // Añadir event listener
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showPanel(item.id);
+                });
+            });
+        } else {
+            // Si ya existen, solo añadir los event listeners
+            for (const navId in tabMapping) {
+                const element = document.getElementById(navId);
+                if (element) {
+                    element.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        showPanel(tabMapping[navId]);
+                    });
+                }
+            }
+        }
+
+        // Función para mostrar panel seleccionado
+        function showPanel(panelId) {
+            // Actualizar enlaces activos en la navegación
+            document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`#nav-${panelId}`).classList.add('active');
+            
+            // Ocultar todos los paneles
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('show', 'active');
+            });
+            
+            // Mostrar el panel seleccionado
+            const targetPane = document.getElementById(panelId);
+            targetPane.classList.add('show', 'active');
+            
+            // Cargar datos según el panel
+            if (panelId === 'estadisticas') {
+                fetchTicketStats(true);
+                fetchRecentTickets();
+            } else if (panelId === 'scanner') {
+                fetchRecentScans();
+            }
+        }
+
+        // Fetch ticket statistics
+        function fetchTicketStats(updateDashboard = false) {
+            fetch("/ticket-stats")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        // Actualizar stats en el formulario de venta
+                        const totalTickets = document.getElementById("total-tickets");
+                        const usedTickets = document.getElementById("used-tickets");
+                        const vipTickets = document.getElementById("vip-tickets");
+                        
+                        // Verificar si los elementos existen antes de actualizar
+                        if (totalTickets) totalTickets.textContent = data.total || "0";
+                        if (usedTickets) usedTickets.textContent = data.used || "0";
+                        if (vipTickets) vipTickets.textContent = data.vip || "0";
+                        
+                        // Actualizar stats en el dashboard si se requiere
+                        if (updateDashboard) {
+                            const totalDash = document.getElementById("total-tickets-dash");
+                            const usedDash = document.getElementById("used-tickets-dash");
+                            const vipDash = document.getElementById("vip-tickets-dash");
+                            
+                            // Verificar si los elementos existen antes de actualizar
+                            if (totalDash) totalDash.textContent = data.total || "0";
+                            if (usedDash) usedDash.textContent = data.used || "0";
+                            if (vipDash) vipDash.textContent = data.vip || "0";
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching stats:", error);
+                    showNotification("Error", "No se pudieron cargar las estadísticas", "danger");
+                });
+        }
+        
+        // Fetch recent tickets
+        function fetchRecentTickets() {
+            fetch("/recent-tickets")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success" && data.tickets) {
+                        const tableBody = document.getElementById("tickets-table");
+                        tableBody.innerHTML = "";
+                        
+                        if (data.tickets.length === 0) {
+                            tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-3">No hay boletos registrados</td></tr>`;
+                            return;
+                        }
+                        
+                        data.tickets.forEach(ticket => {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${ticket.id || ticket.boleto || '-'}</td>
+                                <td>${ticket.email || '-'}</td>
+                                <td>${ticket.vip ? '<span class="badge bg-warning text-dark">VIP</span>' : '<span class="badge bg-secondary">Normal</span>'}</td>
+                                <td>${ticket.usado ? '<span class="badge bg-danger">Usado</span>' : '<span class="badge bg-success">Disponible</span>'}</td>
+                                <td>${ticket.fecha || ticket.fecha_creacion || '-'}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary view-details" data-ticket='${JSON.stringify(ticket)}'>
+                                        <i class="bi bi-eye"></i> Ver detalles
+                                    </button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                            
+                            // Agregar event listener para ver detalles
+                            row.querySelector('.view-details').addEventListener('click', function() {
+                                const ticketData = JSON.parse(this.getAttribute('data-ticket'));
+                                showTicketDetails(ticketData);
+                            });
+                        });
+                    } else {
+                        document.getElementById("tickets-table").innerHTML = `
+                            <tr><td colspan="6" class="text-center py-3">No hay datos disponibles</td></tr>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching recent tickets:", error);
+                    document.getElementById("tickets-table").innerHTML = `
+                        <tr><td colspan="6" class="text-center py-3">Error al cargar datos</td></tr>
+                    `;
+                });
+        }
+        
+        // Fetch recent scans (puede requerir un endpoint adicional)
+        function fetchRecentScans() {
+            fetch("/recent-scans")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success" && data.scans) {
+                        const tableBody = document.getElementById("recent-scans");
+                        tableBody.innerHTML = "";
+                        
+                        if (data.scans.length === 0) {
+                            tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-3">No hay escaneos recientes</td></tr>`;
+                            return;
+                        }
+                        
+                        data.scans.forEach(scan => {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${scan.boleto || '-'}</td>
+                                <td>${scan.email || '-'}</td>
+                                <td>${scan.vip ? '<span class="badge bg-warning text-dark">VIP</span>' : '<span class="badge bg-secondary">Normal</span>'}</td>
+                                <td>${scan.usado ? '<span class="badge bg-danger">Usado</span>' : '<span class="badge bg-success">Disponible</span>'}</td>
+                                <td>${scan.fecha || '-'}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary view-details" data-ticket='${JSON.stringify(scan)}'>
+                                        <i class="bi bi-eye"></i> Ver detalles
+                                    </button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                            
+                            // Agregar event listener para ver detalles
+                            row.querySelector('.view-details').addEventListener('click', function() {
+                                const scanData = JSON.parse(this.getAttribute('data-ticket'));
+                                showTicketDetails(scanData);
+                            });
+                        });
+                    } else {
+                        document.getElementById("recent-scans").innerHTML = `
+                            <tr><td colspan="6" class="text-center py-3">No hay datos disponibles</td></tr>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching recent scans:", error);
+                    // Si no hay endpoint para escaneos, mostrar mensaje genérico
+                    document.getElementById("recent-scans").innerHTML = `
+                        <tr><td colspan="6" class="text-center py-3">No hay datos de escaneos disponibles</td></tr>
+                    `;
+                });
+        }
+
+        // Botones de actualización de estadísticas
+        document.getElementById("refresh-stats-btn").addEventListener("click", function() {
+            fetchTicketStats();
+            showNotification("Actualizado", "Estadísticas actualizadas correctamente", "info");
+        });
+        
+        document.getElementById("refresh-stats-dashboard").addEventListener("click", function() {
+            fetchTicketStats(true);
+            fetchRecentTickets();
+            showNotification("Actualizado", "Estadísticas actualizadas correctamente", "info");
         });
 
-        submit.addEventListener("mouseout", () => {
-            submit.innerHTML = "<i class='fa fa-regular fa-paper-plane'></i>";
-            submit.style.width = "40px";
-        });
-
+        // Función para enviar boletos
         function sendQr() {
             submit.removeEventListener("click", sendQr);
             submit.disabled = true;
             loadingModal.style.display = "flex";
 
-            var email = document.getElementById("email").value;
-            var fullname = document.getElementById("fullname").value;
-            var tickets = document.getElementById("tickets").value;
-            var ticket = document.getElementById("type").value;
+            const email = document.getElementById("email").value;
+            const fullname = document.getElementById("fullname").value;
+            const tickets = document.getElementById("tickets").value;
+            const ticket = document.getElementById("type").value;
 
             fetch("/sendQr", {
                 method: "POST",
@@ -87,16 +933,21 @@
             })
             .then(response => response.json())
             .then(data => {
-                alert(data.message);
                 if (data.response === "success") {
+                    showNotification("¡Éxito!", data.message, "success");
                     document.getElementById("fullname").value = "";
                     document.getElementById("email").value = "";
                     document.getElementById("tickets").value = 1;
+                    
+                    // Actualizar estadísticas
+                    fetchTicketStats(true);
+                } else {
+                    showNotification("Error", data.message || "Ha ocurrido un error", "danger");
                 }
             })
             .catch(error => {
-                alert("Se ha presentado un error");
                 console.error(error);
+                showNotification("Error", "Se ha presentado un error al enviar los boletos", "danger");
             })
             .finally(() => {
                 loadingModal.style.display = "none";
@@ -105,8 +956,75 @@
             });
         }
 
+        // Mostrar detalles del boleto
+        function showTicketDetails(ticket) {
+            document.getElementById('modal-boleto').textContent = ticket.boleto || '-';
+            document.getElementById('modal-id').textContent = ticket.id || '-';
+            document.getElementById('modal-tipo').innerHTML = ticket.vip ? 
+                '<span class="badge bg-warning text-dark">VIP</span>' : 
+                '<span class="badge bg-secondary">Normal</span>';
+            document.getElementById('modal-estado').innerHTML = ticket.usado ? 
+                '<span class="badge bg-danger">Usado</span>' : 
+                '<span class="badge bg-success">Disponible</span>';
+            document.getElementById('modal-email').textContent = ticket.email || '-';
+            document.getElementById('modal-fecha-creacion').textContent = ticket.fecha_creacion || '-';
+            document.getElementById('modal-fecha-uso').textContent = ticket.fecha_uso || '-';
+            document.getElementById('modal-vendedor').textContent = ticket.vendedor || ticket.vendedor_email || '-';
+            
+            // Mostrar el modal
+            const ticketDetailModal = new bootstrap.Modal(document.getElementById('ticketDetailModal'));
+            ticketDetailModal.show();
+        }
+
+        // Buscador de boletos
+        document.getElementById("search-tickets")?.addEventListener("input", function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const rows = document.getElementById("tickets-table").querySelectorAll("tr");
+            
+            rows.forEach(row => {
+                if (row.cells.length < 2) return; // Omitir fila de "No hay datos"
+                
+                const id = row.cells[0].textContent.toLowerCase();
+                const email = row.cells[1].textContent.toLowerCase();
+                
+                if (id.includes(searchTerm) || email.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Show notification function
+        function showNotification(title, message, type) {
+            const notifContainer = document.createElement("div");
+            notifContainer.className = `alert alert-${type} alert-dismissible fade show notification-toast`;
+            notifContainer.style.position = "fixed";
+            notifContainer.style.top = "20px";
+            notifContainer.style.right = "20px";
+            notifContainer.style.zIndex = "1060";
+            notifContainer.style.maxWidth = "350px";
+            notifContainer.style.boxShadow = "0 5px 15px rgba(0,0,0,0.15)";
+            notifContainer.innerHTML = `
+                <strong>${title}</strong> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.appendChild(notifContainer);
+            setTimeout(() => {
+                notifContainer.classList.remove("show");
+                setTimeout(() => notifContainer.remove(), 300);
+            }, 5000);
+        }
+
+        // Try to load initial stats
+        try {
+            fetchTicketStats(true);
+        } catch (e) {
+            console.log("Stats endpoint might not exist yet");
+        }
+        
+        // Add event listener to the form
         submit.addEventListener("click", sendQr);
     });
 </script>
-
 {% endblock %}

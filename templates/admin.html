@@ -1,277 +1,853 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        .nav-tabs .nav-link {
-            cursor: pointer;
-        }
-        .table-responsive {
-            max-height: 500px;
-            overflow-y: auto;
-        }
-    </style>
-</head>
-<body>
-    <div class="container my-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Panel de Administración</h1>
-            <a href="/logout" class="btn btn-outline-danger">Cerrar Sesión</a>
+{% extends 'plantilla.html' %}
+
+{% block title %}Panel de Administración{% endblock %}
+
+{% block body %}
+<div class="container my-4">
+    <div class="page-header fadeIn">
+        <h1>Panel de Administración</h1>
+        <div>
+            <a href="/admin/qr-scanner" class="btn btn-primary">
+                <i class="bi bi-qr-code-scan"></i> Escáner QR
+            </a>
         </div>
+    </div>
 
-        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true">Usuarios</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="codes-tab" data-bs-toggle="tab" data-bs-target="#codes" type="button" role="tab" aria-controls="codes" aria-selected="false">Códigos</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab" aria-controls="config" aria-selected="false">Configuración</button>
-            </li>
-        </ul>
-
-        <div class="tab-content p-3 border border-top-0 rounded-bottom" id="adminTabContent">
-            <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
-                <div class="d-flex justify-content-between mb-3">
-                    <h3>Gestión de Usuarios</h3>
-                    <div>
-                        <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#createUserModal">
-                            <i class="bi bi-person-plus"></i> Crear Usuario
-                        </button>
-                        <a href="/admin/export_users" class="btn btn-success">
-                            <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
-                        </a>
+    <!-- Contenido de pestañas -->
+    <div class="tab-content fadeIn" id="adminTabContent">
+        <!-- Dashboard Tab -->
+        <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+            <div class="row mb-4">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="stats-card primary fadeIn" style="animation-delay: 0.1s">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span class="icon">
+                                    <i class="bi bi-ticket-perforated"></i>
+                                </span>
+                                <h6>Total Boletos</h6>
+                                <h3 id="total-tickets">-</h3>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Email</th>
-                                <th>Rol</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTableBody">
-                        </tbody>
-                    </table>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="stats-card success fadeIn" style="animation-delay: 0.2s">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span class="icon">
+                                    <i class="bi bi-check-circle"></i>
+                                </span>
+                                <h6>Boletos Disponibles</h6>
+                                <h3 id="available-tickets">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="stats-card danger fadeIn" style="animation-delay: 0.3s">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span class="icon">
+                                    <i class="bi bi-x-circle"></i>
+                                </span>
+                                <h6>Boletos Usados</h6>
+                                <h3 id="used-tickets">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="stats-card warning fadeIn" style="animation-delay: 0.4s">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span class="icon">
+                                    <i class="bi bi-star"></i>
+                                </span>
+                                <h6>Boletos VIP</h6>
+                                <h3 id="vip-tickets">-</h3>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="tab-pane fade" id="codes" role="tabpanel" aria-labelledby="codes-tab">
-                <div class="d-flex justify-content-between mb-3">
-                    <h3>Códigos QR</h3>
+            <!-- Estadística de boletos -->
+            <div class="card shadow-sm mb-4 fadeIn" style="animation-delay: 0.5s">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart-fill me-2"></i> Estadísticas de Boletos</h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="ticketStatsChart" height="100"></canvas>
+                </div>
+            </div>
+            
+            <!-- QR Scanner Card -->
+            <div class="card shadow-sm qr-scanner-card mb-4 fadeIn" style="animation-delay: 0.6s">
+                <div class="card-body position-relative overflow-hidden">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="mb-3 text-primary"><i class="bi bi-qr-code-scan me-2"></i> Escáner de QR</h4>
+                            <p class="lead">Verifica y gestiona el acceso de boletos mediante códigos QR</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Escanea códigos QR de boletos</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Verifica validez y estado de los boletos</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Marca boletos como usados</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Consulta información detallada de cada boleto</li>
+                            </ul>
+                            <a href="/admin/qr-scanner" class="btn btn-primary btn-lg mt-3 pulse">
+                                <i class="bi bi-qr-code-scan me-2"></i> Abrir Escáner QR
+                            </a>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-qr-code-scan icon-bg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="card shadow-sm fadeIn" style="animation-delay: 0.7s">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-activity me-2"></i> Actividad Reciente</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Boleto</th>
+                                    <th>Tipo</th>
+                                    <th>Estado</th>
+                                    <th>Email</th>
+                                    <th>Fecha de Uso</th>
+                                    <th>Vendedor</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentActivityTable">
+                                <!-- Activity will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Users Tab -->
+        <div class="tab-pane fade" id="users" role="tabpanel">
+            <div class="d-flex justify-content-between mb-4">
+                <h3>Gestión de Usuarios</h3>
+                <div>
+                    <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                        <i class="bi bi-person-plus"></i> Crear Usuario
+                    </button>
+                    <a href="/admin/export_users" class="btn btn-success">
+                        <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-people me-2"></i> Listado de Usuarios</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="input-group">
+                                <input type="text" id="userSearchInput" class="form-control" placeholder="Buscar usuario...">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Email</th>
+                                    <th>Rol</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Users will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Codes Tab -->
+        <div class="tab-pane fade" id="codes" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Códigos QR</h3>
+                <div>
+                    <a href="/admin/qr-scanner" class="btn btn-primary me-2">
+                        <i class="bi bi-qr-code-scan"></i> Escanear QR
+                    </a>
                     <a href="/admin/export_codes" class="btn btn-success">
                         <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
                     </a>
                 </div>
-                
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Boleto</th>
-                                <th>ID</th>
-                                <th>Estado</th>
-                                <th>Tipo</th>
-                            </tr>
-                        </thead>
-                        <tbody id="codesTableBody">
-                        </tbody>
-                    </table>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-qr-code me-2"></i> Listado de Códigos QR</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="input-group">
+                                <input type="text" id="codesSearchInput" class="form-control" placeholder="Buscar boleto, ID o email...">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Boleto</th>
+                                    <th>ID</th>
+                                    <th>Estado</th>
+                                    <th>Tipo</th>
+                                    <th>Email</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Fecha Uso</th>
+                                    <th>Vendedor</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="codesTableBody">
+                                <!-- Codes will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
-                <h3 class="mb-3">Configuración del Sistema</h3>
-                
-                <form id="configForm" class="mb-4">
-                    <div class="mb-3">
-                        <label for="emailConfig" class="form-label">Email para envío de boletas</label>
-                        <input type="email" class="form-control" id="emailConfig" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="passwordConfig" class="form-label">Clave de aplicación</label>
-                        <input type="password" class="form-control" id="passwordConfig">
-                    </div>
-                    <div class="mb-3">
-                        <label for="emailSubject" class="form-label">Asunto del correo</label>
-                        <input type="text" class="form-control" id="emailSubject" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="emailBody" class="form-label">Cuerpo del correo</label>
-                        <textarea class="form-control" id="emailBody" rows="6" required></textarea>
-                        <small class="text-muted">Usa {name} donde quieras que aparezca el nombre del cliente.</small>
-                    </div>
-                    <div class="card mt-4">
+        <!-- Config Tab -->
+        <div class="tab-pane fade" id="config" role="tabpanel">
+            <h3 class="mb-4">Configuración del Sistema</h3>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
                         <div class="card-header">
-                          <h5>Plantillas de Boletas</h5>
+                            <h5 class="mb-0"><i class="bi bi-envelope me-2"></i> Configuración de Email</h5>
                         </div>
                         <div class="card-body">
-                          <div class="row">
-                            <div class="col-md-6">
-                              <h6>Plantilla Normal</h6>
-                              <form id="formPlantillaNormal" enctype="multipart/form-data">
-                                <input type="hidden" name="tipo" value="normal">
-                                <div class="form-group">
-                                  <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="plantillaNormal" name="file" accept=".png,.jpg">
-                                  </div>
+                            <form id="emailConfigForm">
+                                <div class="mb-3">
+                                    <label for="emailConfig" class="form-label">Email para envío de boletas</label>
+                                    <input type="email" class="form-control" id="emailConfig" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary mt-2">Subir Plantilla Normal</button>
-                              </form>
-                            </div>
-                            <div class="col-md-6">
-                              <h6>Plantilla VIP</h6>
-                              <form id="formPlantillaVIP" enctype="multipart/form-data">
-                                <input type="hidden" name="tipo" value="vip">
-                                <div class="form-group">
-                                  <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="plantillaVIP" name="file" accept=".png,.jpg">
-                                  </div>
+                                <div class="mb-3">
+                                    <label for="passwordConfig" class="form-label">Clave de aplicación</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="passwordConfig">
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary mt-2">Subir Plantilla VIP</button>
-                              </form>
-                            </div>
-                          </div>
-                          <div class="row mt-3">
-                            <div class="col-12">
-                              <a href="/admin/Descargar_plantilla" class="btn btn-secondary">Descargar Plantilla de Ejemplo</a>
-                            </div>
-                          </div>
-                          <div class="row mt-3">
-                            <div class="col-md-6">
-                              <div class="card">
-                                <div class="card-header">Plantilla Normal Actual</div>
-                                <div class="card-body text-center">
-                                  <img id="imgPlantillaNormal" src="/static/plantillas/normal.png" class="img-fluid" style="max-height: 200px;">
-                                  <p id="textPlantillaNormal" class="mt-2"></p>
+                                <div class="mb-3">
+                                    <label for="emailSubject" class="form-label">Asunto del correo</label>
+                                    <input type="text" class="form-control" id="emailSubject" required>
                                 </div>
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div class="card">
-                                <div class="card-header">Plantilla VIP Actual</div>
-                                <div class="card-body text-center">
-                                  <img id="imgPlantillaVIP" src="/static/plantillas/vip.png" class="img-fluid" style="max-height: 200px;">
-                                  <p id="textPlantillaVIP" class="mt-2"></p>
+                                <div class="mb-3">
+                                    <label for="emailBody" class="form-label">Cuerpo del correo</label>
+                                    <textarea class="form-control" id="emailBody" rows="6" required></textarea>
+                                    <small class="text-muted">Usa {name} donde quieras que aparezca el nombre del cliente.</small>
                                 </div>
-                              </div>
-                            </div>
-                          </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-2"></i> Guardar configuración de email
+                                </button>
+                            </form>
                         </div>
-                      </div>
-                    <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-image me-2"></i> Plantillas de Boletas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h6>Plantilla Normal</h6>
+                                    <form id="formPlantillaNormal" enctype="multipart/form-data">
+                                        <input type="hidden" name="tipo" value="normal">
+                                        <div class="mb-3">
+                                            <input type="file" class="form-control" id="plantillaNormal" name="file" accept=".png,.jpg">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="bi bi-upload me-2"></i> Subir Plantilla Normal
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Plantilla VIP</h6>
+                                    <form id="formPlantillaVIP" enctype="multipart/form-data">
+                                        <input type="hidden" name="tipo" value="vip">
+                                        <div class="mb-3">
+                                            <input type="file" class="form-control" id="plantillaVIP" name="file" accept=".png,.jpg">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="bi bi-upload me-2"></i> Subir Plantilla VIP
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid mb-4">
+                                <a href="/admin/Descargar_plantilla" class="btn btn-secondary">
+                                    <i class="bi bi-download me-2"></i> Descargar Plantilla de Ejemplo
+                                </a>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-header">Plantilla Normal Actual</div>
+                                        <div class="card-body text-center">
+                                            <img id="imgPlantillaNormal" src="/static/plantillas/normal.png" class="img-fluid shadow-sm rounded" style="max-height: 200px;">
+                                            <p id="textPlantillaNormal" class="mt-2"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-header">Plantilla VIP Actual</div>
+                                        <div class="card-body text-center">
+                                            <img id="imgPlantillaVIP" src="/static/plantillas/vip.png" class="img-fluid shadow-sm rounded" style="max-height: 200px;">
+                                            <p id="textPlantillaVIP" class="mt-2"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para crear usuario -->
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createUserModalLabel">
+                    <i class="bi bi-person-plus me-2"></i> Crear Nuevo Usuario
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createUserForm">
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="userEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="userPassword" required>
+                            <button class="btn btn-outline-secondary" type="button" id="toggleUserPasswordBtn">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="isAdmin">
+                        <label class="form-check-label" for="isAdmin">
+                            ¿Es administrador?
+                        </label>
+                    </div>
+                    <div class="mb-3" id="adminCodeContainer" style="display: none;">
+                        <label for="userAdminCode" class="form-label">Código de administrador</label>
+                        <input type="password" class="form-control" id="userAdminCode">
+                        <small class="text-muted">Este código secreto permitirá al usuario iniciar sesión como administrador.</small>
+                    </div>
                 </form>
             </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createUserModalLabel">Crear Nuevo Usuario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="createUserForm">
-                        <div class="mb-3">
-                            <label for="userEmail" class="form-label">Correo electrónico</label>
-                            <input type="email" class="form-control" id="userEmail" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="userPassword" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="userPassword" required>
-                        </div>
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="isAdmin">
-                            <label class="form-check-label" for="isAdmin">
-                                ¿Es administrador?
-                            </label>
-                        </div>
-                        <div class="mb-3" id="adminCodeContainer" style="display: none;">
-                            <label for="userAdminCode" class="form-label">Código de administrador</label>
-                            <input type="password" class="form-control" id="userAdminCode">
-                            <small class="text-muted">Este código secreto permitirá al usuario iniciar sesión como administrador.</small>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="saveUserBtn">Guardar</button>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="saveUserBtn">
+                    <i class="bi bi-save me-2"></i> Guardar Usuario
+                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        function loadUsers() {
-            fetch('/admin/get_users')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.response === 'success') {
-                        const tableBody = document.getElementById('usersTableBody');
-                        tableBody.innerHTML = '';
-                        
-                        data.users.forEach(user => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${user.id}</td>
-                                <td>${user.email}</td>
-                                <td>${user.is_admin ? 'Administrador' : 'Usuario'}</td>
-                            `;
-                            tableBody.appendChild(row);
-                        });
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+<!-- Modal para detalles del boleto -->
+<div class="modal fade" id="ticketDetailModal" tabindex="-1" aria-labelledby="ticketDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ticketDetailModalLabel">
+                    <i class="bi bi-ticket-detailed me-2"></i> Detalles del Boleto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="ticket-details">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Boleto:</strong>
+                                <span id="modal-boleto">-</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>ID:</strong>
+                                <span id="modal-id">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Tipo:</strong>
+                                <span id="modal-tipo">-</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Estado:</strong>
+                                <span id="modal-estado">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="detail-item">
+                                <strong>Email:</strong>
+                                <span id="modal-email">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Fecha Creación:</strong>
+                                <span id="modal-fecha-creacion">-</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Fecha Uso:</strong>
+                                <span id="modal-fecha-uso">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="detail-item">
+                                <strong>Vendedor:</strong>
+                                <span id="modal-vendedor">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-success" id="modal-mark-used" style="display: none;">
+                    <i class="bi bi-check-circle me-2"></i> Marcar como Usado
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    :root {
+        --primary-color: #3a86ff;
+        --primary-dark: #0051cc;
+        --primary-light: #e9f2ff;
+        --secondary-color: #ff6b6b;
+        --success-color: #2ecc71;
+        --warning-color: #f39c12;
+        --info-color: #3498db;
+        --danger-color: #e74c3c;
+        --dark-color: #2d3748;
+        --light-color: #f8f9fa;
+        --border-radius: 10px;
+        --card-shadow: 0 6px 15px -3px rgba(0, 0, 0, 0.08);
+        --transition: all 0.2s ease-in-out;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    body.dark-mode .tab-content,
+    body.dark-mode .page-header,
+    body.dark-mode .card {
+        background-color: #2d3748;
+        border: 1px solid #3a465a;
+    }
+    
+    body.dark-mode .card-header {
+        background-color: #2d3748;
+        border-bottom: 1px solid #3a465a;
+    }
+    
+    body.dark-mode h1, 
+    body.dark-mode h3, 
+    body.dark-mode h4, 
+    body.dark-mode h5,
+    body.dark-mode label {
+        color: #e2e8f0;
+    }
+
+    body.dark-mode .form-control, 
+    body.dark-mode .form-select {
+        background-color: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    body.dark-mode .table th {
+        background-color: #374151;
+        color: #e5e7eb;
+        border-color: #4b5563;
+    }
+    
+    body.dark-mode .table td {
+        border-color: #4b5563;
+        color: #e5e7eb;
+    }
+
+    .page-header {
+        background-color: #fff;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--card-shadow);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .stats-card {
+        background-color: #fff;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        height: 100%;
+        box-shadow: var(--card-shadow);
+        border-left: 4px solid var(--primary-color);
+        transition: var(--transition);
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    }
+    
+    .stats-card .icon {
+        font-size: 2rem;
+        padding: 15px;
+        border-radius: 50%;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+    
+    .stats-card.primary {
+        border-left-color: var(--primary-color);
+    }
+    .stats-card.primary .icon {
+        background-color: var(--primary-light);
+        color: var(--primary-color);
+    }
+    
+    .stats-card.success {
+        border-left-color: var(--success-color);
+    }
+    .stats-card.success .icon {
+        background-color: rgba(46, 204, 113, 0.15);
+        color: var(--success-color);
+    }
+    
+    .stats-card.danger {
+        border-left-color: var(--danger-color);
+    }
+    .stats-card.danger .icon {
+        background-color: rgba(231, 76, 60, 0.15);
+        color: var(--danger-color);
+    }
+    
+    .stats-card.warning {
+        border-left-color: var(--warning-color);
+    }
+    .stats-card.warning .icon {
+        background-color: rgba(243, 156, 18, 0.15);
+        color: var(--warning-color);
+    }
+    
+    .stats-card h6 {
+        color: #718096;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-card h3 {
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 0;
+    }
+    
+    .dark-mode .stats-card {
+        background-color: #2d3748;
+        border: 1px solid #3a465a;
+    }
+    
+    .dark-mode .stats-card h6 {
+        color: #a0aec0;
+    }
+    
+    .dark-mode .stats-card h3 {
+        color: #fff;
+    }
+    
+    .card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    
+    .card:hover {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #edf2f7;
+        font-weight: 600;
+        padding: 1rem 1.5rem;
+    }
+    
+    .qr-scanner-card {
+        transition: transform 0.3s;
+    }
+    
+    .qr-scanner-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .qr-scanner-card .icon-bg {
+        font-size: 8rem;
+        opacity: 0.07;
+        position: absolute;
+        right: 20px;
+        bottom: -20px;
+    }
+    
+    /* Animaciones y transiciones */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fadeIn {
+        animation: fadeIn 0.5s ease forwards;
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(58, 134, 255, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(58, 134, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(58, 134, 255, 0); }
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    /* Notification styles */
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 300px;
+        max-width: 450px;
+        animation: slideIn 0.3s ease-out forwards;
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    .notification-success {
+        background-color: #d1fae5;
+        border-left: 4px solid var(--success-color);
+        color: #065f46;
+    }
+    
+    .notification-danger {
+        background-color: #fee2e2;
+        border-left: 4px solid var(--danger-color);
+        color: #b91c1c;
+    }
+    
+    /* Estilos para el modal de detalles */
+    .ticket-details .detail-item {
+        margin-bottom: 10px;
+    }
+    
+    .ticket-details .detail-item strong {
+        min-width: 120px;
+        display: inline-block;
+    }
+</style>
+
+<script>
+    // Inicializar navegación mejorada para el panel
+    document.addEventListener('DOMContentLoaded', function() {
+        // Añadir opciones de navegación al navbar
+        const navbar = document.querySelector('.navbar-nav');
+        
+        // Comprobar si ya existen elementos del menú (para evitar duplicados)
+        if (!document.querySelector('#nav-dashboard')) {
+            // Crear menú de navegación dinámico
+            const navItems = [
+                { id: 'dashboard', icon: 'bi-speedometer2', text: 'Dashboard' },
+                { id: 'users', icon: 'bi-people', text: 'Usuarios' },
+                { id: 'codes', icon: 'bi-qr-code', text: 'Códigos' },
+                { id: 'config', icon: 'bi-gear', text: 'Configuración' }
+            ];
+            
+            // Añadir elementos al navbar si existe
+            if (navbar) {
+                navItems.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item';
+                    
+                    const link = document.createElement('a');
+                    link.className = index === 0 ? 'nav-link active' : 'nav-link';
+                    link.id = 'nav-' + item.id;
+                    link.href = '#' + item.id;
+                    link.innerHTML = `<i class="bi ${item.icon}"></i> ${item.text}`;
+                    
+                    li.appendChild(link);
+                    navbar.appendChild(li);
+                    
+                    // Añadir event listener
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        showPanel(item.id);
+                    });
+                });
+                
+                // Añadir enlace al escáner QR si no existe
+                if (!document.querySelector('.navbar-nav a[href="/admin/qr-scanner"]')) {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item';
+                    
+                    const link = document.createElement('a');
+                    link.className = 'nav-link';
+                    link.href = '/admin/qr-scanner';
+                    link.innerHTML = '<i class="bi bi-qr-code-scan"></i> Escáner QR';
+                    
+                    li.appendChild(link);
+                    navbar.appendChild(li);
+                }
+            }
+        } else {
+            // Si ya existen, añadir los event listeners
+            document.querySelectorAll('.navbar-nav a[href^="#"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    showPanel(targetId);
+                });
+            });
         }
         
-        function loadCodes() {
-            fetch('/admin/get_codes')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.response === 'success') {
-                        const tableBody = document.getElementById('codesTableBody');
-                        tableBody.innerHTML = '';
-                        
-                        data.codes.forEach(code => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${code.boleto}</td>
-                                <td>${code.id}</td>
-                                <td>${code.usado ? '<span class="badge bg-danger">Usado</span>' : '<span class="badge bg-success">Disponible</span>'}</td>
-                                <td>${code.vip ? '<span class="badge bg-warning text-dark">VIP</span>' : '<span class="badge bg-secondary">Normal</span>'}</td>
-                            `;
-                            tableBody.appendChild(row);
-                        });
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
+        // Cargar datos iniciales
+        loadCodes();
+        loadUsers();
         
-        function loadConfig() {
-            fetch('/admin/get_config')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.response === 'success') {
-                        document.getElementById('emailConfig').value = data.config.email;
-                        document.getElementById('emailSubject').value = data.config.email_subject || 'Codigo QR Chico Talento';
-                        document.getElementById('emailBody').value = data.config.email_body || '¡Hola! {name} Gracias por tu compra, con el siguiente código puedes confirmar tu entrada al evento de chico talento que se estará realziando el día 11 de Abril del 2024 a las 5:00PM en el emiciclo Helado de Leche.';
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
+        // Toggle password visibility
+        document.getElementById('togglePasswordBtn').addEventListener('click', function() {
+            const passwordInput = document.getElementById('passwordConfig');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
         
-        document.getElementById('configForm').addEventListener('submit', function(e) {
+        // Toggle user password visibility
+        document.getElementById('toggleUserPasswordBtn').addEventListener('click', function() {
+            const passwordInput = document.getElementById('userPassword');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+        
+        // Mostrar campo de código admin al crear usuario
+        document.getElementById('isAdmin').addEventListener('change', function() {
+            document.getElementById('adminCodeContainer').style.display = this.checked ? 'block' : 'none';
+        });
+        
+        // Email config form handler
+        document.getElementById('emailConfigForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const email = document.getElementById('emailConfig').value;
@@ -294,21 +870,16 @@
             .then(response => response.json())
             .then(data => {
                 if (data.response === 'success') {
-                    alert('Configuración actualizada con éxito');
+                    showNotification('Configuración actualizada con éxito', 'success');
                     document.getElementById('passwordConfig').value = '';
                 } else {
-                    alert('Error: ' + data.message);
+                    showNotification('Error: ' + data.message, 'danger');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al actualizar la configuración');
+                showNotification('Error al actualizar la configuración', 'danger');
             });
-        });
-        
-        // Mostrar campo de código admin al crear usuario
-        document.getElementById('isAdmin').addEventListener('change', function() {
-            document.getElementById('adminCodeContainer').style.display = this.checked ? 'block' : 'none';
         });
         
         // Crear usuario
@@ -333,36 +904,435 @@
             .then(response => response.json())
             .then(data => {
                 if (data.response === 'success') {
-                    alert('Usuario creado con éxito');
+                    showNotification('Usuario creado con éxito', 'success');
                     document.getElementById('createUserForm').reset();
                     document.getElementById('adminCodeContainer').style.display = 'none';
                     document.getElementById('createUserModal').querySelector('.btn-close').click();
                     loadUsers();
                 } else {
-                    alert('Error: ' + data.message);
+                    showNotification('Error: ' + data.message, 'danger');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al crear usuario');
+                showNotification('Error al crear usuario', 'danger');
             });
         });
         
-        document.querySelectorAll('#adminTabs .nav-link').forEach(tab => {
-            tab.addEventListener('shown.bs.tab', function(e) {
-                if (e.target.id === 'users-tab') {
-                    loadUsers();
-                } else if (e.target.id === 'codes-tab') {
-                    loadCodes();
-                } else if (e.target.id === 'config-tab') {
-                    loadConfig();
+        // Search functionality for codes
+        document.getElementById('codesSearchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const rows = document.getElementById('codesTableBody').querySelectorAll('tr');
+            
+            rows.forEach(row => {
+                const boleto = row.cells[0].textContent.toLowerCase();
+                const id = row.cells[1].textContent.toLowerCase();
+                const email = row.cells[4] ? row.cells[4].textContent.toLowerCase() : '';
+                const vendedor = row.cells[7] ? row.cells[7].textContent.toLowerCase() : '';
+                
+                if (boleto.includes(searchTerm) || 
+                    id.includes(searchTerm) || 
+                    email.includes(searchTerm) || 
+                    vendedor.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
                 }
             });
         });
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            loadUsers();
+
+        // User search functionality
+        document.getElementById('userSearchInput')?.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const rows = document.getElementById('usersTableBody').querySelectorAll('tr');
+            
+            rows.forEach(row => {
+                const email = row.cells[1].textContent.toLowerCase();
+                const id = row.cells[0].textContent.toLowerCase();
+                
+                if (email.includes(searchTerm) || id.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         });
-    </script>
-</body>
-</html>
+
+        // Marcar boleto como usado desde modal
+        document.getElementById('modal-mark-used').addEventListener('click', function() {
+            const ticketId = this.getAttribute('data-ticket-id');
+            if (!ticketId) return;
+            
+            fetch(`/scan/${ticketId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "válido") {
+                        showNotification('Boleto marcado como usado correctamente', 'success');
+                        loadCodes(); // Recargar datos
+                        document.querySelector('#ticketDetailModal .btn-close').click(); // Cerrar modal
+                    } else {
+                        showNotification('Error: ' + data.message, 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error al marcar el boleto', 'danger');
+                });
+        });
+    });
+
+    // Función para mostrar un panel y ocultar los demás
+    function showPanel(panelId) {
+        // Actualizar enlaces activos en la navegación
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        document.querySelector(`#nav-${panelId}`).classList.add('active');
+        
+        // Ocultar todos los paneles
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.remove('show', 'active');
+        });
+        
+        // Mostrar el panel seleccionado
+        const targetPane = document.getElementById(panelId);
+        targetPane.classList.add('show', 'active');
+        
+        // Cargar los datos correspondientes
+        loadTabData(panelId);
+    }
+    
+    // Función para cargar datos según la pestaña activa
+    function loadTabData(tabId) {
+        if (tabId === 'users') {
+            loadUsers();
+        } else if (tabId === 'codes') {
+            loadCodes();
+        } else if (tabId === 'config') {
+            loadConfig();
+        } else if (tabId === 'dashboard') {
+            loadCodes(); // Esto actualizará estadísticas y actividad reciente
+        }
+    }
+    
+    // Inicializar gráficos
+    function initCharts(usedCount, availableCount, vipCount, normalCount) {
+        // Gráfico de estadísticas de boletos
+        const ctx = document.getElementById('ticketStatsChart').getContext('2d');
+        
+        // Destruir gráfico existente si lo hay
+        if (window.ticketChart) {
+            window.ticketChart.destroy();
+        }
+        
+        window.ticketChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Total', 'Disponibles', 'Usados', 'VIP', 'Normal'],
+                datasets: [{
+                    label: 'Cantidad de Boletos',
+                    data: [usedCount + availableCount, availableCount, usedCount, vipCount, (usedCount + availableCount) - vipCount],
+                    backgroundColor: [
+                        'rgba(58, 134, 255, 0.6)',
+                        'rgba(46, 204, 113, 0.6)',
+                        'rgba(231, 76, 60, 0.6)',
+                        'rgba(243, 156, 18, 0.6)',
+                        'rgba(149, 165, 166, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(58, 134, 255, 1)',
+                        'rgba(46, 204, 113, 1)',
+                        'rgba(231, 76, 60, 1)',
+                        'rgba(243, 156, 18, 1)',
+                        'rgba(149, 165, 166, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        precision: 0
+                    }
+                }
+            }
+        });
+    }
+    
+    // Función para cargar usuarios
+    function loadUsers() {
+        fetch('/admin/get_users')
+            .then(response => response.json())
+            .then(data => {
+                if (data.response === 'success') {
+                    const tableBody = document.getElementById('usersTableBody');
+                    tableBody.innerHTML = '';
+                    
+                    data.users.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.id}</td>
+                            <td>${user.email}</td>
+                            <td>${user.is_admin ? '<span class="badge bg-primary">Administrador</span>' : '<span class="badge bg-secondary">Usuario</span>'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    
+    // Función para cargar códigos y actualizar estadísticas
+    function loadCodes() {
+        fetch('/admin/get_codes')
+            .then(response => response.json())
+            .then(data => {
+                if (data.response === 'success') {
+                    const tableBody = document.getElementById('codesTableBody');
+                    tableBody.innerHTML = '';
+                    
+                    // Update stats in dashboard
+                    updateStats(data.codes);
+                    
+                    data.codes.forEach(code => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${code.boleto}</td>
+                            <td>${code.id}</td>
+                            <td>${code.usado ? '<span class="badge bg-danger">Usado</span>' : '<span class="badge bg-success">Disponible</span>'}</td>
+                            <td>${code.vip ? '<span class="badge bg-warning text-dark">VIP</span>' : '<span class="badge bg-secondary">Normal</span>'}</td>
+                            <td>${code.email || '-'}</td>
+                            <td>${code.fecha_creacion || '-'}</td>
+                            <td>${code.fecha_uso || '-'}</td>
+                            <td>${code.vendedor || '-'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1 view-details" data-code='${JSON.stringify(code)}' title="Ver detalles">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                ${!code.usado ? `
+                                <button class="btn btn-sm btn-outline-success me-1 mark-used" data-id="${code.id}" title="Marcar como usado">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>` : ''}
+                                <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                        
+                        // Añadir event listener para ver detalles
+                        row.querySelector('.view-details').addEventListener('click', function() {
+                            const codeData = JSON.parse(this.getAttribute('data-code'));
+                            showTicketDetails(codeData);
+                        });
+                        
+                        // Añadir event listener para marcar como usado
+                        if (!code.usado) {
+                            row.querySelector('.mark-used').addEventListener('click', function() {
+                                const codeId = this.getAttribute('data-id');
+                                markTicketAsUsed(codeId);
+                            });
+                        }
+                    });
+                    
+                    // Load recent activity for dashboard
+                    loadRecentActivity(data.codes);
+                    
+                    // Initialize charts
+                    const usedTickets = data.codes.filter(code => code.usado).length;
+                    const availableTickets = data.codes.length - usedTickets;
+                    const vipTickets = data.codes.filter(code => code.vip).length;
+                    
+                    initCharts(usedTickets, availableTickets, vipTickets, data.codes.length - vipTickets);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    
+    // Función para actualizar estadísticas
+    function updateStats(codes) {
+        if (!codes) return;
+        
+        const totalTickets = codes.length;
+        const usedTickets = codes.filter(code => code.usado).length;
+        const availableTickets = totalTickets - usedTickets;
+        const vipTickets = codes.filter(code => code.vip).length;
+        
+        document.getElementById('total-tickets').textContent = totalTickets;
+        document.getElementById('used-tickets').textContent = usedTickets;
+        document.getElementById('available-tickets').textContent = availableTickets;
+        document.getElementById('vip-tickets').textContent = vipTickets;
+    }
+    
+    // Función para cargar actividad reciente
+    function loadRecentActivity(codes) {
+        if (!codes || codes.length === 0) return;
+        
+        // Sort by used status and date (used tickets first, most recent)
+        const sortedCodes = [...codes].sort((a, b) => {
+            // Put used tickets first
+            if (a.usado && !b.usado) return -1;
+            if (!a.usado && b.usado) return 1;
+            
+            // For used tickets, compare by fecha_uso (newer first)
+            if (a.usado && b.usado) {
+                const dateA = a.fecha_uso ? new Date(a.fecha_uso) : new Date(0);
+                const dateB = b.fecha_uso ? new Date(b.fecha_uso) : new Date(0);
+                return dateB - dateA;
+            }
+            
+            // For unused tickets, compare by fecha_creacion (newer first)
+            const createDateA = a.fecha_creacion ? new Date(a.fecha_creacion) : new Date(0);
+            const createDateB = b.fecha_creacion ? new Date(b.fecha_creacion) : new Date(0);
+            return createDateB - createDateA;
+        });
+        
+        // Take first 10 tickets
+        const recentCodes = sortedCodes.slice(0, 10);
+        
+        const tableBody = document.getElementById('recentActivityTable');
+        tableBody.innerHTML = '';
+        
+        recentCodes.forEach(code => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${code.boleto}</td>
+                <td>${code.vip ? '<span class="badge bg-warning text-dark badge-xl">VIP</span>' : '<span class="badge bg-secondary badge-xl">Normal</span>'}</td>
+                <td>${code.usado ? '<span class="badge bg-danger badge-xl">Usado</span>' : '<span class="badge bg-success badge-xl">Disponible</span>'}</td>
+                <td>${code.email || '-'}</td>
+                <td>${code.fecha_uso || '-'}</td>
+                <td>${code.vendedor || '-'}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary view-details" data-code='${JSON.stringify(code)}' title="Ver detalles">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+            
+            // Añadir event listener para ver detalles
+            row.querySelector('.view-details').addEventListener('click', function() {
+                const codeData = JSON.parse(this.getAttribute('data-code'));
+                showTicketDetails(codeData);
+            });
+        });
+    }
+    
+    // Mostrar detalles del boleto en un modal
+    function showTicketDetails(code) {
+        document.getElementById('modal-boleto').textContent = code.boleto;
+        document.getElementById('modal-id').textContent = code.id;
+        document.getElementById('modal-tipo').innerHTML = code.vip ? 
+            '<span class="badge bg-warning text-dark">VIP</span>' : 
+            '<span class="badge bg-secondary">Normal</span>';
+        document.getElementById('modal-estado').innerHTML = code.usado ? 
+            '<span class="badge bg-danger">Usado</span>' : 
+            '<span class="badge bg-success">Disponible</span>';
+        document.getElementById('modal-email').textContent = code.email || '-';
+        document.getElementById('modal-fecha-creacion').textContent = code.fecha_creacion || '-';
+        document.getElementById('modal-fecha-uso').textContent = code.fecha_uso || '-';
+        document.getElementById('modal-vendedor').textContent = code.vendedor || '-';
+        
+        const markUsedBtn = document.getElementById('modal-mark-used');
+        if (code.usado) {
+            markUsedBtn.style.display = 'none';
+        } else {
+            markUsedBtn.style.display = 'block';
+            markUsedBtn.setAttribute('data-ticket-id', code.id);
+        }
+        
+        // Mostrar el modal
+        const ticketDetailModal = new bootstrap.Modal(document.getElementById('ticketDetailModal'));
+        ticketDetailModal.show();
+    }
+    
+    // Marcar boleto como usado
+    function markTicketAsUsed(ticketId) {
+        fetch(`/scan/${ticketId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "válido") {
+                    showNotification('Boleto marcado como usado correctamente', 'success');
+                    loadCodes(); // Recargar datos
+                } else {
+                    showNotification('Error: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error al marcar el boleto', 'danger');
+            });
+    }
+    
+    // Función para cargar configuración
+    function loadConfig() {
+        fetch('/admin/get_config')
+            .then(response => response.json())
+            .then(data => {
+                if (data.response === 'success') {
+                    document.getElementById('emailConfig').value = data.config.email;
+                    document.getElementById('emailSubject').value = data.config.email_subject || 'Codigo QR Chico Talento';
+                    document.getElementById('emailBody').value = data.config.email_body || '¡Hola! {name} Gracias por tu compra, con el siguiente código puedes confirmar tu entrada al evento de chico talento que se estará realziando el día 11 de Abril del 2024 a las 5:00PM en el emiciclo Helado de Leche.';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    
+    // Función para mostrar notificaciones
+    function showNotification(message, type) {
+        // Remove any existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => {
+            notification.style.animation = 'slideOut 0.3s ease-in forwards';
+            setTimeout(() => notification.remove(), 300);
+        });
+
+        // Create new notification
+        const notificationDiv = document.createElement('div');
+        notificationDiv.className = `notification notification-${type}`;
+        
+        let icon = type === 'success' ? 'bi-check-circle' : 'bi-exclamation-circle';
+        let title = type === 'success' ? 'Éxito' : 'Error';
+        
+        notificationDiv.innerHTML = `
+            <div class="notification-icon">
+                <i class="bi ${icon}"></i>
+            </div>
+            <div class="notification-content">
+                <div class="notification-title">${title}</div>
+                <div>${message}</div>
+            </div>
+            <button class="notification-close">
+                <i class="bi bi-x"></i>
+            </button>
+        `;
+        
+        document.body.appendChild(notificationDiv);
+        
+        // Add close functionality
+        notificationDiv.querySelector('.notification-close').addEventListener('click', function() {
+            notificationDiv.style.animation = 'slideOut 0.3s ease-in forwards';
+            setTimeout(() => notificationDiv.remove(), 300);
+        });
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (document.body.contains(notificationDiv)) {
+                notificationDiv.style.animation = 'slideOut 0.3s ease-in forwards';
+                setTimeout(() => notificationDiv.remove(), 300);
+            }
+        }, 5000);
+    }
+</script>
+{% endblock %}

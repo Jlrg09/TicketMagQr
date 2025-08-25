@@ -4,15 +4,29 @@ from reportlab.lib.units import inch
 import qrcode
 from database import session_codigos, Codigo
 import os
+from datetime import datetime
 
 
 class Generator:
     def __init__(self, qrs, ticket):
+        """
+        Inicializa el generador de PDFs con códigos QR.
+        
+        Args:
+            qrs: Número de códigos QR a generar
+            ticket: Tipo de boleto ('vip' o 'normal')
+        """
         self.width, self.height = A4
         self.ticket = ticket
         self.qrs = qrs
     
     def generatePdf(self):
+        """
+        Genera un PDF con los códigos QR.
+        
+        Returns:
+            list: Lista de rutas de las imágenes QR generadas
+        """
         cuadricule = canvas.Canvas("archivo.pdf", pagesize=letter)
         pictures = []
 
@@ -38,7 +52,21 @@ class Generator:
         return pictures
 
     def generateQr(self, vip=False):
-        code = Codigo(id=os.urandom(8).hex(), vip=vip)
+        """
+        Genera un código QR y lo guarda en la base de datos.
+        
+        Args:
+            vip: Indica si es un boleto VIP
+            
+        Returns:
+            tuple: (ruta_imagen, número_boleto)
+        """
+        # Crear un nuevo código en la base de datos
+        code = Codigo(
+            id=os.urandom(8).hex(),
+            vip=vip,
+            fecha_creacion=datetime.utcnow()
+        )
         session_codigos.add(code)
         session_codigos.commit()
 
@@ -56,4 +84,13 @@ class Generator:
 
 
 def generateNum(num: int):
+    """
+    Formatea el número de boleto con ceros a la izquierda.
+    
+    Args:
+        num: Número de boleto
+        
+    Returns:
+        str: Número formateado (ej: "0001")
+    """
     return str(num).zfill(4)

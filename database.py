@@ -1,7 +1,7 @@
 import bcrypt
-from sqlalchemy import Text, create_engine, Column, String, Integer, Boolean
+from sqlalchemy import Text, create_engine, Column, String, Integer, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker, declarative_base
-
+from datetime import datetime
 
 # Base de datos para códigos QR
 engine_codigos = create_engine("sqlite:///codigos.db")
@@ -27,6 +27,11 @@ class Codigo(BaseCodigos):
     id = Column(String, nullable=False, unique=True)
     usado = Column(Boolean, nullable=False, default=False)
     vip = Column(Boolean, nullable=False, default=False)
+    email = Column(String, nullable=True)  # Email del destinatario
+    fecha_creacion = Column(DateTime, default=datetime.utcnow)  # Fecha de creación
+    fecha_uso = Column(DateTime, nullable=True)  # Fecha de uso
+    vendedor_id = Column(Integer, nullable=True)  # ID del vendedor que generó el código
+    vendedor_email = Column(String, nullable=True)  # Email del vendedor para referencia directa
 
 class Usuario(BaseCredenciales):
     __tablename__ = "Usuarios"

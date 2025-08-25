@@ -27,7 +27,7 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = getenv('SECRET_KEY')
 app.config['SESSION_PERMANENT'] = False
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1) 
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=200) 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -66,7 +66,35 @@ def index():
 @app.route("/home")
 def home():
     if validateSession():
-        return render_template("home.html")
+        try:
+            # Obtener estadísticas de boletos
+            total_tickets = session_codigos.query(Codigo).count()
+            used_tickets = session_codigos.query(Codigo).filter(Codigo.usado == True).count()
+            vip_tickets = session_codigos.query(Codigo).filter(Codigo.vip == True).count()
+            
+            stats = {
+                'total': total_tickets,
+                'used': used_tickets,
+                'vip': vip_tickets
+            }
+            
+            # Obtener los últimos 10 tickets para datos iniciales
+            recent_tickets = session_codigos.query(Codigo).order_by(Codigo.fecha_creacion.desc()).limit(10).all()
+            tickets = [
+                {
+                    "id": code.id,
+                    "boleto": code.boleto,
+                    "email": code.email or "-",
+                    "usado": code.usado,
+                    "vip": code.vip,
+                    "fecha": code.fecha_creacion.strftime("%Y-%m-%d %H:%M") if code.fecha_creacion else "-"
+                } for code in recent_tickets
+            ]
+            
+            return render_template("home.html", stats=stats, tickets=tickets)
+        except Exception as e:
+            print(f"Error al obtener datos para home: {e}")
+            return render_template("home.html")
     return redirect("/")
 
 
@@ -82,34 +110,110 @@ def generar():
     if validateSession():
         try:
             data = request.get_json()
-            qrs = Generator(int(data["tickets"]), data['ticket']).generatePdf()
+            email_destino = data.get('email')
+            fullname = data.get('fullname')
+            cantidad_tickets = int(data.get('tickets', 1))
+            tipo_ticket = data.get('ticket', 'normal')
+            
+            # Generar los QRs
+            qrs = Generator(cantidad_tickets, tipo_ticket).generatePdf()
+            
+            # Actualizar información de los códigos en la base de datos
+            # Asumiendo que Generator devuelve los IDs de los códigos generados o estos son accesibles
+            # Obtener los últimos códigos generados igual a la cantidad solicitada
+            codigos_generados = session_codigos.query(Codigo).order_by(Codigo.boleto.desc()).limit(cantidad_tickets).all()
+            
+            for codigo in codigos_generados:
+                codigo.email = email_destino
+                codigo.fecha_creacion = datetime.utcnow()
+                codigo.vendedor_id = cloud.get('user_id')  # ID del vendedor de la sesión
+                codigo.vendedor_email = cloud.get('username')  # Email del vendedor
+                session_codigos.add(codigo)
+            
+            session_codigos.commit()
 
+            # Limpieza de archivos
             for file in qrs:
                 os.remove(os.path.join("", file))
-                
-            sendMessage(mail, data['email'], data['fullname'])
-            return jsonify(response = "success", message = "Código(s) envíados al destinatario")
+            
+            # Envío del email
+            sendMessage(mail, email_destino, fullname)
+            
+            return jsonify(response="success", message="Código(s) envíados al destinatario")
         except Exception as e:
             print(e)
-            return jsonify(respose = "failed", message = "No lo envía")
-    return jsonify(response = "failed", message = "Sin acceso al sistema")
+            return jsonify(response="failed", message="Error al generar o enviar los códigos")
+    return jsonify(response="failed", message="Sin acceso al sistema")
 
 
 @app.route("/scan/<string:qr>")
 def verifyQr(qr):
+    # Verificar si es solo consulta o para marcar como usado
+    verify_only = request.args.get('verify', 'false').lower() == 'true'
+    
     code = session_codigos.query(Codigo).filter(Codigo.id == qr).first()
 
-    if code != None and code.usado == False:
+    if code is None:
+        return jsonify(status="inválido", message="El código no está registrado en plataforma")
+        
+    # Si solo estamos verificando, no marcar como usado
+    if verify_only:
+        message = f"Boleto #{code.boleto} {'V.I.P' if code.vip else 'normal'}"
+        if code.usado:
+            message += " - ESTE BOLETO YA FUE USADO"
+            status = "inválido"
+        else:
+            message += " - Boleto válido y disponible para usar"
+            status = "válido"
+            
+        return jsonify(
+            status=status, 
+            message=message,
+            ticket={
+                "boleto": code.boleto,
+                "usado": code.usado,
+                "vip": code.vip,
+                "email": code.email,
+                "fecha_creacion": code.fecha_creacion.strftime("%Y-%m-%d %H:%M") if code.fecha_creacion else "-",
+                "vendedor": code.vendedor_email
+            }
+        )
+    
+    # Si no es solo verificación, procedemos a marcar como usado
+    if code.usado == False:
         code.usado = True
+        code.fecha_uso = datetime.utcnow()
         session_codigos.add(code)
         session_codigos.commit()
 
         message = f"Boleto #{code.boleto} normal, acceso permitido" if code.vip == False else f"Boleto #{code.boleto} V.I.P dile al cliente que reclame su extra"
 
-        return jsonify(status = "válido", message = message)
+        return jsonify(
+            status="válido", 
+            message=message,
+            ticket={
+                "boleto": code.boleto,
+                "usado": True,
+                "vip": code.vip,
+                "email": code.email,
+                "fecha_creacion": code.fecha_creacion.strftime("%Y-%m-%d %H:%M") if code.fecha_creacion else "-",
+                "vendedor": code.vendedor_email
+            }
+        )
     
-    message = "El código no está registrado en plataforma" if code == None else f"El boleto #{code.boleto} ya fue usado"
-    return jsonify(status = "inválido", message = message)
+    return jsonify(
+        status="inválido", 
+        message=f"El boleto #{code.boleto} ya fue usado",
+        ticket={
+            "boleto": code.boleto,
+            "usado": True,
+            "vip": code.vip,
+            "email": code.email,
+            "fecha_creacion": code.fecha_creacion.strftime("%Y-%m-%d %H:%M") if code.fecha_creacion else "-",
+            "vendedor": code.vendedor_email
+        }
+    )
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -119,6 +223,8 @@ def login():
 
         if user and bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
             session['valid'] = True
+            session['username'] = user.email
+            session['user_id'] = user.id
             session.permanent = False
 
             if user.is_admin:
@@ -187,7 +293,18 @@ def get_codes():
     
     try:
         codes = session_codigos.query(Codigo).all()
-        code_list = [{"boleto": code.boleto, "id": code.id, "usado": code.usado, "vip": code.vip} for code in codes]
+        code_list = [
+            {
+                "boleto": code.boleto,
+                "id": code.id,
+                "usado": code.usado,
+                "vip": code.vip,
+                "email": code.email,
+                "fecha_creacion": code.fecha_creacion.strftime("%Y-%m-%d %H:%M") if code.fecha_creacion else "-",
+                "fecha_uso": code.fecha_uso.strftime("%Y-%m-%d %H:%M") if code.fecha_uso else "-",
+                "vendedor": code.vendedor_email
+            } for code in codes
+        ]
         return jsonify(response="success", codes=code_list)
     except Exception as e:
         print(e)
@@ -269,7 +386,18 @@ def export_codes():
     
     try:
         codes = session_codigos.query(Codigo).all()
-        code_data = [{"Boleto": code.boleto, "ID": code.id, "Usado": code.usado, "VIP": code.vip} for code in codes]
+        code_data = [
+            {
+                "Boleto": code.boleto,
+                "ID": code.id,
+                "Usado": code.usado,
+                "VIP": code.vip,
+                "Email": code.email,
+                "Fecha Creación": code.fecha_creacion.strftime("%Y-%m-%d %H:%M") if code.fecha_creacion else "-",
+                "Fecha Uso": code.fecha_uso.strftime("%Y-%m-%d %H:%M") if code.fecha_uso else "-",
+                "Vendedor": code.vendedor_email
+            } for code in codes
+        ]
         
         df = pd.DataFrame(code_data)
         output = io.BytesIO()
@@ -310,6 +438,92 @@ def get_config():
     except Exception as e:
         print(e)
         return jsonify(response="failed", message="Error al obtener configuración")
+
+
+# Nuevas rutas para el escáner QR
+@app.route('/qr-scanner')
+def qr_scanner():
+    if validateSession():
+        return render_template('qr_scanner.html')
+    return redirect('/')
+
+
+@app.route('/admin/qr-scanner')
+def admin_qr_scanner():
+    if validateAdminSession():
+        return render_template('qr_scanner.html')
+    return redirect('/')
+
+
+# Nuevas rutas para estadísticas y datos
+@app.route("/ticket-stats")
+def ticket_stats():
+    if validateSession():
+        try:
+            # Obtener estadísticas de boletos
+            total_tickets = session_codigos.query(Codigo).count()
+            used_tickets = session_codigos.query(Codigo).filter(Codigo.usado == True).count()
+            vip_tickets = session_codigos.query(Codigo).filter(Codigo.vip == True).count()
+            
+            return jsonify({
+                "status": "success",
+                "total": str(total_tickets),
+                "used": str(used_tickets),
+                "vip": str(vip_tickets)
+            })
+        except Exception as e:
+            print(f"Error al obtener estadísticas: {e}")
+            return jsonify({"status": "error", "message": str(e)}), 500
+    return jsonify({"status": "error", "message": "No autorizado"}), 401
+
+
+@app.route("/recent-tickets")
+def recent_tickets():
+    if validateSession():
+        try:
+            # Obtener los últimos 20 tickets
+            recent_tickets = session_codigos.query(Codigo).order_by(Codigo.fecha_creacion.desc()).limit(20).all()
+            tickets = [
+                {
+                    "id": code.id,
+                    "boleto": code.boleto,
+                    "email": code.email or "-",
+                    "usado": code.usado,
+                    "vip": code.vip,
+                    "fecha": code.fecha_creacion.strftime("%Y-%m-%d %H:%M") if code.fecha_creacion else "-",
+                    "vendedor": code.vendedor_email or "-"
+                } for code in recent_tickets
+            ]
+            
+            return jsonify({"status": "success", "tickets": tickets})
+        except Exception as e:
+            print(f"Error al obtener boletos recientes: {e}")
+            return jsonify({"status": "error", "message": str(e)}), 500
+    return jsonify({"status": "error", "message": "No autorizado"}), 401
+
+
+@app.route("/recent-scans")
+def recent_scans():
+    if validateSession():
+        try:
+            # Obtener los últimos 10 tickets escaneados (usado = True)
+            recent_scans = session_codigos.query(Codigo).filter(Codigo.usado == True).order_by(Codigo.fecha_uso.desc()).limit(10).all()
+            scans = [
+                {
+                    "boleto": code.boleto,
+                    "usado": code.usado,
+                    "vip": code.vip,
+                    "email": code.email or "-",
+                    "fecha": code.fecha_uso.strftime("%Y-%m-%d %H:%M") if code.fecha_uso else "-",
+                    "vendedor": code.vendedor_email or "-"
+                } for code in recent_scans
+            ]
+            
+            return jsonify({"status": "success", "scans": scans})
+        except Exception as e:
+            print(f"Error al obtener escaneos recientes: {e}")
+            return jsonify({"status": "error", "message": str(e)}), 500
+    return jsonify({"status": "error", "message": "No autorizado"}), 401
 
 
 if __name__ == "__main__":

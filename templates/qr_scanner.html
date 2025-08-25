@@ -1,0 +1,573 @@
+{% extends 'plantilla.html' %}
+
+{% block title %}Escáner QR{% endblock %}
+
+{% block body %}
+<div class="container my-4">
+    <div class="page-header fadeIn">
+        <h1>Escáner de QR</h1>
+        <div>
+            <a id="back-button" href="/admin" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Volver al Panel
+            </a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="bi bi-qr-code-scan me-2 fs-4"></i>
+                    <h5 class="mb-0">Escanea un código QR</h5>
+                </div>
+                <div class="card-body text-center position-relative">
+                    <div class="scanner-status" id="scanner-status">
+                        <i class="bi bi-camera"></i> Escáner activo - Apunta al código QR
+                    </div>
+                    
+                    <div id="video-container" class="shadow-lg mb-4" style="display: none;">
+                        <video id="qr-video" autoplay playsinline></video>
+                        <div class="scanner-overlay">
+                            <div class="scanner-crosshair pulse-border"></div>
+                            <div class="scanner-laser"></div>
+                        </div>
+                    </div>
+                    
+                    <canvas id="qr-canvas" style="display:none;"></canvas>
+                    
+                    <div class="qr-actions">
+                        <button id="use-qr" class="btn btn-primary btn-lg">
+                            <i class="bi bi-camera"></i> Iniciar Escáner
+                        </button>
+                        <button id="stop-scanner" class="btn btn-danger btn-lg" style="display: none;">
+                            <i class="bi bi-x-circle"></i> Detener Escáner
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4 px-md-4">
+                        <div class="card bg-light border-0 shadow-sm">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-3">O ingresa el código manualmente</h6>
+                                <div class="input-group">
+                                    <input type="text" id="qr-input" class="form-control" placeholder="Escribe el código aquí">
+                                    <button id="verify-manual" class="btn btn-outline-primary">
+                                        <i class="bi bi-check-lg"></i> Verificar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="qr-result" class="mt-4 shadow-sm">
+                        <div class="card border-0">
+                            <div class="card-header">
+                                <h4 id="result-title" class="mb-0">Resultado</h4>
+                            </div>
+                            <div class="card-body">
+                                <p id="result-message" class="lead"></p>
+                                <div id="ticket-details" class="ticket-info mt-3" style="display: none;">
+                                    <h5 class="border-bottom pb-2 mb-3">Información del Boleto</h5>
+                                    <div id="ticket-data"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.3.1/dist/jsQR.min.js"></script>
+<style>
+    /* Estilos del escáner QR mejorados */
+    #qr-canvas {
+        width: 100%;
+        height: auto;
+    }
+    
+    #video-container {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    #qr-video {
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+    
+    .scanner-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.2);
+        border-radius: 12px;
+        pointer-events: none;
+    }
+    
+    .scanner-laser {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #ff4757;
+        box-shadow: 0 0 8px #ff4757;
+        animation: scan 2s infinite;
+    }
+    
+    @keyframes scan {
+        0% { top: 20%; }
+        50% { top: 80%; }
+        100% { top: 20%; }
+    }
+    
+    .scanner-crosshair {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 220px;
+        height: 220px;
+        margin-top: -110px;
+        margin-left: -110px;
+        border: 3px solid rgba(255,255,255,0.7);
+        border-radius: 16px;
+        box-shadow: 0 0 0 3px rgba(0,0,0,0.3);
+    }
+    
+    .pulse-border {
+        animation: pulseBorder 2s infinite;
+    }
+    
+    @keyframes pulseBorder {
+        0% { box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.4); }
+        70% { box-shadow: 0 0 0 15px rgba(24, 144, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(24, 144, 255, 0); }
+    }
+    
+    #qr-result {
+        margin-top: 25px;
+        border-radius: 10px;
+        overflow: hidden;
+        display: none;
+    }
+    
+    #qr-result.success-bg {
+        border-left: 5px solid #2ecc71;
+    }
+    
+    #qr-result.error-bg {
+        border-left: 5px solid #e74c3c;
+    }
+    
+    .ticket-info {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+    }
+    
+    .scanner-status {
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #6c757d;
+        display: none;
+        padding: 10px 15px;
+        border-radius: 50px;
+        background: #f1f5f9;
+    }
+    
+    .scanner-status.active {
+        display: inline-block;
+        color: #3a86ff;
+        background: #e9f2ff;
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { opacity: 0.6; }
+        50% { opacity: 1; }
+        100% { opacity: 0.6; }
+    }
+    
+    .page-header {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 6px 15px -3px rgba(0, 0, 0, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .dark-mode .page-header {
+        background-color: #2d3748;
+        border: 1px solid #3a465a;
+    }
+    
+    .dark-mode .ticket-info,
+    .dark-mode .scanner-status {
+        background-color: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .dark-mode .scanner-status.active {
+        background-color: rgba(58, 134, 255, 0.15);
+        color: #3a86ff;
+    }
+    
+    .qr-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin: 20px 0;
+        flex-wrap: wrap;
+    }
+    
+    .qr-actions .btn {
+        padding: 12px 25px;
+        font-weight: 600;
+        border-radius: 50px;
+        min-width: 180px;
+    }
+    
+    /* Animaciones */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fadeIn {
+        animation: fadeIn 0.5s ease forwards;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elementos DOM
+        const video = document.getElementById('qr-video');
+        const videoContainer = document.getElementById('video-container');
+        const canvasElement = document.getElementById('qr-canvas');
+        const canvas = canvasElement.getContext('2d');
+        const useButton = document.getElementById('use-qr');
+        const stopButton = document.getElementById('stop-scanner');
+        const qrResult = document.getElementById('qr-result');
+        const resultMessage = document.getElementById('result-message');
+        const resultTitle = document.getElementById('result-title');
+        const ticketDetails = document.getElementById('ticket-details');
+        const ticketData = document.getElementById('ticket-data');
+        const qrInput = document.getElementById('qr-input');
+        const verifyManual = document.getElementById('verify-manual');
+        const scannerStatus = document.getElementById('scanner-status');
+        const backButton = document.getElementById('back-button');
+
+        let scanning = false;
+        let currentQrCode = null;
+        let videoStream = null;
+        let scanMode = null;
+        let lastScannedCode = null;
+        let scanInterval = null;
+
+        // Configurar botón de regreso según la URL o referrer
+        const urlParams = new URLSearchParams(window.location.search);
+        const source = urlParams.get('source');
+        const referrerPath = document.referrer ? new URL(document.referrer).pathname : '';
+        
+        // Aquí corregimos la línea problemática - estaba usando sintaxis de JSX dentro de una expresión JavaScript
+        const isAdmin = "{{ 'true' if session.get('role') == 'Admin' else 'false' }}" === "true";
+        
+        if (source === 'admin' || referrerPath.includes('/admin')) {
+            backButton.href = '/admin';
+            backButton.innerHTML = '<i class="bi bi-arrow-left"></i> Volver al Panel Admin';
+        } else if (referrerPath.includes('/home')) {
+            backButton.href = '/home';
+            backButton.innerHTML = '<i class="bi bi-arrow-left"></i> Volver a Ventas';
+        } else {
+            // Si no hay una página de referencia clara, comprueba si el usuario es admin
+            if (isAdmin) {
+                backButton.href = '/admin';
+                backButton.innerHTML = '<i class="bi bi-arrow-left"></i> Volver al Panel Admin';
+            } else {
+                backButton.href = '/home';
+                backButton.innerHTML = '<i class="bi bi-arrow-left"></i> Volver a Ventas';
+            }
+        }
+
+        // Optimización: almacenar la página de origen para futuras navegaciones
+        localStorage.setItem('lastPage', backButton.href);
+
+        useButton.addEventListener('click', function() {
+            scanMode = 'use';
+            startScanner();
+        });
+        
+        stopButton.addEventListener('click', function() {
+            stopScanner();
+        });
+        
+        verifyManual.addEventListener('click', function() {
+            const manualQrCode = qrInput.value.trim();
+            if (manualQrCode) {
+                currentQrCode = manualQrCode;
+                useQrCode(manualQrCode);
+                qrInput.value = '';
+            }
+        });
+
+        // Función optimizada de inicio del escáner
+        async function startScanner() {
+            if (scanning) return;
+            
+            // Actualizar UI
+            useButton.style.display = 'none';
+            stopButton.style.display = 'inline-block';
+            scannerStatus.classList.add('active');
+            qrResult.style.display = 'none';
+            
+            try {
+                // Solicitar acceso a la cámara con mejor manejo de errores
+                videoStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: "environment",
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                
+                video.srcObject = videoStream;
+                videoContainer.style.display = 'block';
+                scanning = true;
+                
+                // Esperar a que el video esté listo
+                await new Promise((resolve) => {
+                    video.onloadedmetadata = () => {
+                        resolve();
+                    };
+                });
+                
+                // Limpiar cualquier intervalo previo
+                if (scanInterval) {
+                    clearInterval(scanInterval);
+                }
+                
+                // Usar intervalo para controlar la frecuencia de escaneo (mejor rendimiento)
+                lastScannedCode = null;
+                scanInterval = setInterval(scanFrame, 150); // Escaneo cada 150ms para mejor rendimiento
+                
+            } catch (error) {
+                console.error("Error al acceder a la cámara:", error);
+                
+                if (error.name === 'NotAllowedError') {
+                    showMessage("Permiso denegado: Por favor, permite el acceso a la cámara.", "error");
+                } else if (error.name === 'NotFoundError') {
+                    showMessage("No se encontró ninguna cámara en este dispositivo.", "error");
+                } else {
+                    showMessage("Error al acceder a la cámara: " + error.message, "error");
+                }
+                
+                resetScannerUI();
+            }
+        }
+
+        // Función optimizada para escanear frames
+        function scanFrame() {
+            if (!scanning || video.readyState !== video.HAVE_ENOUGH_DATA) return;
+            
+            try {
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                
+                const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: "dontInvert",
+                });
+                
+                if (code && code.data) {
+                    // Evitar escanear el mismo código repetidamente
+                    if (code.data !== lastScannedCode) {
+                        lastScannedCode = code.data;
+                        currentQrCode = code.data;
+                        
+                        // Sonido de éxito y feedback visual
+                        beep();
+                        
+                        // Detener escáner y procesar el código
+                        clearInterval(scanInterval);
+                        stopScanner();
+                        useQrCode(code.data);
+                    }
+                }
+            } catch (error) {
+                console.error('Error al escanear el frame:', error);
+                // Continuar escaneando a pesar del error
+            }
+        }
+
+        // Detener el escáner
+        function stopScanner() {
+            if (scanInterval) {
+                clearInterval(scanInterval);
+                scanInterval = null;
+            }
+            
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            
+            videoContainer.style.display = 'none';
+            scanning = false;
+            resetScannerUI();
+        }
+        
+        // Restablecer UI después de escanear
+        function resetScannerUI() {
+            useButton.style.display = 'inline-block';
+            stopButton.style.display = 'none';
+            scannerStatus.classList.remove('active');
+        }
+        
+        // Verificar código QR
+        function verifyQrCode(qrCode) {
+            fetch(`/scan/${qrCode}?verify=true`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === "válido") {
+                        showMessage(`${data.message}`, "success");
+                        displayTicketInfo(data.ticket);
+                    } else {
+                        showMessage(`${data.message}`, "error");
+                        ticketDetails.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('Error al verificar el código QR: ' + error.message, "error");
+                });
+        }
+        
+        // Usar código QR
+        function useQrCode(qrCode) {
+            // Mostrar un estado de carga
+            showMessage("Procesando código...", "info");
+            
+            fetch(`/scan/${qrCode}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === "válido") {
+                        showMessage(`${data.message}`, "success");
+                        displayTicketInfo(data.ticket);
+                    } else {
+                        showMessage(`${data.message}`, "error");
+                        ticketDetails.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('Error al procesar el código QR: ' + error.message, "error");
+                });
+        }
+        
+        // Mostrar mensaje de resultado con mejor estilo
+        function showMessage(message, type) {
+            resultMessage.textContent = message;
+            qrResult.style.display = 'block';
+            
+            qrResult.classList.remove('success-bg', 'error-bg');
+            
+            if (type === "success") {
+                qrResult.classList.add('success-bg');
+                resultTitle.textContent = "¡ÉXITO! PUEDES ACCEDER AL EVENTO.";
+                resultTitle.className = "mb-0 text-success";
+            } else if (type === "error") {
+                qrResult.classList.add('error-bg');
+                resultTitle.textContent = "¡¡¡CUIDADO!!! REVISA TU BOLETO.";
+                resultTitle.className = "mb-0 text-danger";
+            } else {
+                resultTitle.textContent = "Información";
+                resultTitle.className = "mb-0 text-info";
+            }
+        }
+        
+        // Mostrar información del boleto con mejor estilo
+        function displayTicketInfo(ticket) {
+            if (ticket) {
+                ticketDetails.style.display = 'block';
+                
+                let usadoClass = ticket.usado ? 'text-white bg-danger' : 'text-white bg-success';
+                let vipClass = ticket.vip ? 'text-dark bg-warning' : 'text-white bg-secondary';
+                
+                let html = `
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="text-muted mb-1">Número de Boleto</h6>
+                                    <h4 class="mb-0">#${ticket.boleto}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="text-muted mb-1">Tipo de Boleto</h6>
+                                    <span class="badge ${vipClass} badge-lg fs-6 px-3 py-2">${ticket.vip ? 'VIP' : 'Normal'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-muted mb-1">Estado del Boleto</h6>
+                            <div class="d-flex align-items-center">
+                                <span class="badge ${usadoClass} badge-lg fs-6 px-3 py-2">${ticket.usado ? 'Usado' : 'Disponible'}</span>
+                                ${!ticket.usado ? '<span class="ms-2 text-success"><i class="bi bi-check-circle-fill"></i> Listo para usar</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                ticketData.innerHTML = html;
+            } else {
+                ticketDetails.style.display = 'none';
+            }
+        }
+        
+        // Sonido de beep mejorado al detectar QR
+        function beep() {
+            try {
+                const beepSound = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'+Array(1e3).join('A'));
+                beepSound.volume = 0.5;
+                beepSound.play();
+            } catch (error) {
+                console.error('Error al reproducir sonido:', error);
+            }
+            
+            // Vibración si es compatible (móvil)
+            if ('vibrate' in navigator) {
+                navigator.vibrate(200);
+            }
+        }
+    });
+</script>
+{% endblock %}
