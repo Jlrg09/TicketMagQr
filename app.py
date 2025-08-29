@@ -110,7 +110,8 @@ def generar():
     if validateSession():
         try:
             data = request.get_json()
-            email_destino = data.get('email')
+            # Normalizar email a minúsculas
+            email_destino = data.get('email').lower() if data.get('email') else None
             fullname = data.get('fullname')
             cantidad_tickets = int(data.get('tickets', 1))
             tipo_ticket = data.get('ticket', 'normal')
@@ -219,7 +220,9 @@ def verifyQr(qr):
 def login():
     if request.method == 'POST':
         data = request.form
-        user = session_credenciales.query(Usuario).filter(Usuario.email == data['email']).first()
+        # Normalizar email a minúsculas
+        email = data['email'].lower()
+        user = session_credenciales.query(Usuario).filter(Usuario.email == email).first()
 
         if user and bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
             session['valid'] = True
@@ -253,7 +256,8 @@ def create_user():
     
     try:
         data = request.get_json()
-        email = data.get('email')
+        # Normalizar email a minúsculas
+        email = data.get('email').lower() if data.get('email') else None
         password = data.get('password')
         is_admin = data.get('is_admin', False)
         admin_code = data.get('admin_code') if is_admin else None
@@ -318,7 +322,8 @@ def update_config():
     
     try:
         data = request.get_json()
-        email = data.get('email')
+        # Normalizar email a minúsculas
+        email = data.get('email').lower() if data.get('email') else None
         password = data.get('password')
         email_subject = data.get('email_subject')
         email_body = data.get('email_body')

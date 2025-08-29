@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <!-- Favicon -->
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
@@ -11,15 +11,43 @@
     <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{url_for('static', filename='icons/js/all.min.js')}}"></script>
     <title>{% block title %}{% endblock %}</title>
     <style>
-        /* Navbar styles */
+        :root {
+            --primary-color: #3a57e8;
+            --primary-light: #e9efff;
+            --primary-dark: #203cc9;
+            --secondary-color: #ff814a;
+            --secondary-light: #fff5f0;
+            --secondary-dark: #e25f20;
+            --success-color: #1aa053;
+            --warning-color: #f16a1b;
+            --info-color: #4bc0e8;
+            --danger-color: #e53f3c;
+            --dark-color: #212529;
+            --light-color: #fafafa;
+            --border-radius: 10px;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.2s ease-in-out;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-color);
+        }
+        
+        /* Navbar styles - Colores más elegantes */
         .navbar {
-            background: linear-gradient(90deg, #57b7ff 0%, #6dd5ed 100%);
-            border-bottom: 2px solid #e3f6ff;
-            box-shadow: 0 3px 16px rgba(87,183,255,0.09);
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            padding: 0.6rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
         }
         .navbar-brand {
             display: flex;
@@ -30,22 +58,23 @@
             letter-spacing: 1px;
         }
         .navbar-brand .logo-img {
-            width: 40px;
-            height: 40px;
-            margin-right: 12px;
+            width: 36px;
+            height: 36px;
+            margin-right: 10px;
             object-fit: contain;
         }
         .navbar .nav-link {
             color: rgba(255, 255, 255, 0.9) !important;
             font-weight: 500;
-            padding: 0.6rem 1rem;
-            border-radius: 6px;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
             transition: all 0.3s;
             position: relative;
             margin: 0 2px;
+            white-space: nowrap;
         }
         .navbar .nav-link:hover, 
         .navbar .nav-link.active {
@@ -60,58 +89,62 @@
             left: 0;
             width: 100%;
             height: 3px;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.8);
             border-radius: 2px 2px 0 0;
         }
         .navbar .nav-link i {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
         }
         .user-info {
             color: #fff;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            background: rgba(255, 255, 255, 0.08);
-            padding: 0.5rem 1rem;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 0.6rem 1rem;
             border-radius: 50px;
         }
         .user-info .avatar {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.18);
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            margin-right: 0.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
         }
         .btn-logout {
             font-weight: 600;
             border-radius: 50px;
             font-size: 0.95rem;
-            padding: 0.5rem 1.25rem;
+            padding: 0.6rem 1.3rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            background: linear-gradient(135deg, #ff646e 0%, #ffb86c 100%);
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--danger-color) 100%);
             color: #fff;
             border: none;
-            box-shadow: 0 3px 10px rgba(255,100,110,0.15);
+            box-shadow: 0 4px 12px rgba(229, 63, 60, 0.2);
             transition: all 0.3s;
         }
         .btn-logout:hover {
-            background: linear-gradient(135deg, #ffb86c 0%, #ff646e 100%);
+            background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--danger-color) 100%);
             color: #fff;
-            box-shadow: 0 5px 15px rgba(255,100,110,0.25);
+            box-shadow: 0 6px 15px rgba(229, 63, 60, 0.3);
             transform: translateY(-2px);
             text-decoration: none;
         }
+        .btn-logout:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(229, 63, 60, 0.3);
+        }
         .mode-toggle-btn {
-            background: rgba(255,255,255,0.12);
+            background: rgba(255, 255, 255, 0.15);
             border: none;
             color: #fff;
             border-radius: 50%;
@@ -120,31 +153,28 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-left: 12px;
-            font-size: 1.35rem;
+            margin-left: 10px;
+            font-size: 1.3rem;
             transition: all 0.3s;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
         }
         .mode-toggle-btn:hover {
-            background: rgba(255,255,255,0.25);
+            background: rgba(255, 255, 255, 0.25);
             transform: rotate(15deg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
         /* Footer styles */
         .footer {
             background-color: #f8f9fa;
-            border-top: 1px solid #e3e6f0;
+            border-top: 1px solid #e9ecef;
             padding-top: 2.5rem;
             padding-bottom: 1.5rem;
             margin-top: 3rem;
             box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.05);
             position: relative;
             z-index: 10;
-            pointer-events: auto;
-        }
-        
-        .footer-content {
-            pointer-events: auto;
         }
         
         .footer-brand {
@@ -152,32 +182,24 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 1.5rem;
-            cursor: default;
         }
         
         .footer-brand img {
             width: 32px;
             height: 32px;
-            pointer-events: none;
         }
         
         .footer-brand span {
             font-size: 1.25rem;
             font-weight: 600;
-            color: #333;
-            pointer-events: none;
-        }
-        
-        .footer-description {
-            cursor: default;
-            pointer-events: none;
+            color: var(--dark-color);
         }
         
         .footer h5 {
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 1.25rem;
-            color: #495057;
+            color: var(--dark-color);
         }
         
         .footer-links {
@@ -199,7 +221,7 @@
         }
         
         .footer-links a:hover {
-            color: #57b7ff;
+            color: var(--primary-color);
         }
         
         .footer-links i {
@@ -208,12 +230,12 @@
         
         .footer-divider {
             margin: 1.5rem 0;
-            border-top: 1px solid #e3e6f0;
+            border-top: 1px solid #e9ecef;
         }
         
         .footer-social {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             margin-bottom: 1rem;
         }
         
@@ -221,16 +243,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background-color: #e9ecef;
-            color: #57b7ff;
+            color: var(--primary-color);
             transition: all 0.2s;
         }
         
         .footer-social a:hover {
-            background-color: #57b7ff;
+            background-color: var(--primary-color);
             color: white;
             transform: translateY(-3px);
         }
@@ -241,7 +263,7 @@
         }
         
         .footer-copyright a {
-            color: #57b7ff;
+            color: var(--primary-color);
             text-decoration: none;
         }
         
@@ -250,44 +272,49 @@
         }
         
         /* Dark mode for footer */
+        .dark-mode {
+            --light-color: #151521;
+            --dark-color: #f8f9fa;
+        }
+        
         .dark-mode .footer {
-            background-color: #2d3748;
-            border-top: 1px solid #3a465a;
+            background-color: #1a1a27;
+            border-top: 1px solid #2b2b40;
         }
         
         .dark-mode .footer-brand span,
         .dark-mode .footer h5 {
-            color: #e2e8f0;
+            color: #f8f9fa;
         }
         
         .dark-mode .footer-links a {
-            color: #a0aec0;
+            color: #a3a3a3;
         }
         
         .dark-mode .footer-links a:hover {
-            color: #6dd5ed;
+            color: var(--primary-color);
         }
         
         .dark-mode .footer-divider {
-            border-top: 1px solid #3a465a;
+            border-top: 1px solid #2b2b40;
         }
         
         .dark-mode .footer-social a {
-            background-color: #3a465a;
-            color: #6dd5ed;
+            background-color: #2b2b40;
+            color: var(--primary-color);
         }
         
         .dark-mode .footer-social a:hover {
-            background-color: #6dd5ed;
-            color: #2d3748;
+            background-color: var(--primary-color);
+            color: #fff;
         }
         
         .dark-mode .footer-copyright {
-            color: #a0aec0;
+            color: #a3a3a3;
         }
         
         .dark-mode .footer-copyright a {
-            color: #6dd5ed;
+            color: var(--primary-color);
         }
         
         /* Aseguramos que el footer tenga suficiente distancia del contenido */
@@ -296,15 +323,64 @@
             padding-bottom: 1rem;
         }
         
+        /* Dark mode styles para todo el sitio */
+        .dark-mode {
+            background-color: #151521;
+            color: #e2e8f0;
+        }
+        
+        .dark-mode .card {
+            background-color: #1a1a27;
+            border-color: #2b2b40;
+        }
+        
+        .dark-mode .card-header {
+            background-color: #1a1a27;
+            border-bottom-color: #2b2b40;
+        }
+        
+        .dark-mode .bg-light {
+            background-color: #1a1a27 !important;
+        }
+        
+        .dark-mode .text-dark {
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-mode .border-light {
+            border-color: #2b2b40 !important;
+        }
+        
+        .dark-mode .table {
+            color: #e2e8f0;
+        }
+        
+        .dark-mode .table th {
+            background-color: #252536;
+        }
+        
+        .dark-mode .table td {
+            border-color: #2b2b40;
+        }
+        
+        .dark-mode .form-control,
+        .dark-mode .form-select {
+            background-color: #1a1a27;
+            border-color: #2b2b40;
+            color: #e2e8f0;
+        }
+        
+        /* Mejoras responsivas */
         @media (max-width: 992px) {
             .navbar .container-fluid {
-                padding: 0.5rem 1rem;
+                padding: 0.5rem;
             }
             
             .navbar-toggler {
                 border: none;
                 color: #fff;
                 font-size: 1.5rem;
+                padding: 0.25rem 0.5rem;
             }
 
             .navbar-toggler:focus {
@@ -312,19 +388,41 @@
             }
 
             .navbar-collapse {
-                background: linear-gradient(90deg, #57b7ff 0%, #6dd5ed 100%);
-                border-radius: 0 0 10px 10px;
+                background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+                border-radius: 0 0 12px 12px;
                 box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-                padding: 1rem;
+                padding: 1.25rem;
                 z-index: 1000;
+                max-height: calc(100vh - 60px);
+                overflow-y: auto;
             }
 
             .navbar-nav {
                 margin-bottom: 1rem;
+                gap: 0.5rem;
             }
 
             .navbar .nav-link {
                 padding: 0.75rem 1rem;
+                margin-bottom: 0.25rem;
+                display: flex;
+                align-items: center;
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .navbar .nav-link i {
+                margin-right: 0.75rem;
+                width: 1.5rem;
+                font-size: 1.2rem;
+                text-align: center;
+            }
+            
+            /* FIX: Asegurarnos que los textos siempre sean visibles */
+            .navbar .nav-link span {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
             }
 
             .navbar .nav-link.active::after {
@@ -333,47 +431,242 @@
 
             .user-actions {
                 flex-direction: column;
-                gap: 0.5rem;
+                align-items: stretch !important;
+                gap: 0.75rem;
                 width: 100%;
+                margin-top: 0.5rem;
             }
 
             .user-info {
                 width: 100%;
                 justify-content: center;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                padding: 0.75rem 1rem;
+            }
+
+            .user-info span:not(.avatar) {
+                max-width: 150px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .btn-logout {
                 width: 100%;
                 justify-content: center;
+                padding: 0.75rem 1rem;
             }
 
             .mode-toggle-btn {
                 margin: 0.5rem auto;
+                width: 45px;
+                height: 45px;
             }
             
             .footer-section {
                 margin-bottom: 2rem;
             }
         }
+        
         @media (max-width: 768px) {
             .navbar-brand {
                 font-size: 1.15rem;
                 letter-spacing: 0.5px;
             }
+            
+            .navbar-brand .logo-img {
+                width: 32px;
+                height: 32px;
+                margin-right: 8px;
+            }
+            
             .user-info {
-                font-size: 0.99rem;
+                font-size: 0.9rem;
+                padding: 0.5rem 0.75rem;
             }
+            
+            .user-info .avatar {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            
             .btn-logout {
-                font-size: 0.99rem;
-                padding: 0.32rem 0.9rem;
+                font-size: 0.95rem;
+                padding: 0.5rem 0.75rem;
             }
+            
+            .mode-toggle-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 1.1rem;
+            }
+            
+            .footer {
+                padding-top: 1.5rem;
+                padding-bottom: 1rem;
+                text-align: center;
+            }
+            
+            .footer-brand {
+                justify-content: center;
+                margin-bottom: 1rem;
+            }
+            
+            .footer-links {
+                margin-bottom: 1.5rem;
+            }
+            
+            .footer-social {
+                justify-content: center;
+            }
+            
+            .footer h5 {
+                margin-top: 1rem;
+            }
+            
+            .footer-copyright {
+                text-align: center !important;
+                margin-top: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .navbar {
+                padding: 0.5rem 0.75rem;
+            }
+            
+            .footer {
+                margin-top: 2rem;
+                padding-top: 1.5rem;
+            }
+            
+            .footer-section {
+                margin-bottom: 1.5rem;
+            }
+            
+            .footer-divider {
+                margin: 1rem 0;
+            }
+            
+            /* Especialmente para pantallas muy pequeñas */
+            .navbar .nav-link i {
+                margin-right: 0.8rem;
+            }
+        }
+        
+        /* Fix for too long usernames */
+        .user-info .username {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Enhance touch targets for mobile */
+        @media (max-width: 768px) {
+            .footer-links li {
+                margin-bottom: 1rem;
+            }
+            
+            .footer-links a {
+                padding: 0.25rem 0;
+                display: inline-block;
+            }
+            
+            .footer-social a {
+                width: 42px;
+                height: 42px;
+                margin: 0 0.25rem;
+            }
+            
+            /* Better spacing for touchable elements */
+            .nav-link, .btn-logout, .mode-toggle-btn, .footer a {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+        }
+        
+        /* Estilos más elegantes para componentes */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(58, 87, 232, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
+            box-shadow: 0 6px 15px rgba(58, 87, 232, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, var(--success-color), #0d8544);
+            border: none;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(26, 160, 83, 0.2);
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(45deg, #0d8544, var(--success-color));
+            box-shadow: 0 6px 15px rgba(26, 160, 83, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, var(--warning-color), #e05709);
+            border: none;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(241, 106, 27, 0.2);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(45deg, #e05709, var(--warning-color));
+            box-shadow: 0 6px 15px rgba(241, 106, 27, 0.3);
+            transform: translateY(-1px);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, var(--danger-color), #d01f1c);
+            border: none;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(229, 63, 60, 0.2);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #d01f1c, var(--danger-color));
+            box-shadow: 0 6px 15px rgba(229, 63, 60, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        /* Animaciones */
+        .animated-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .animated-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 
 <body class="bg-light">
     <header>
-        <nav class="navbar navbar-expand-lg shadow-lg py-2">
+        <nav class="navbar navbar-expand-lg shadow-lg">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">
                     <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-img">
@@ -389,19 +682,19 @@
                     </ul>
                     
                     {% if 'valid' in session %}
-                    <div class="d-flex align-items-center user-actions" style="gap: 1rem;">
+                    <div class="d-flex align-items-center user-actions" style="gap: 0.75rem;">
                         <div class="user-info me-2">
                             <span class="avatar"><i class="bi bi-person-fill"></i></span>
-                            <span>{{ session.get('username', 'Usuario') }}</span>
-                            <span class="badge bg-light text-dark ms-2" title="Perfil">
+                            <span class="username">{{ session.get('username', 'Usuario') }}</span>
+                            <span class="badge bg-light text-dark ms-1 d-none d-sm-inline" title="Perfil">
                                 <i class="bi bi-star-fill me-1"></i>
                                 {{ session.get('role', 'Usuario') }}
                             </span>
                         </div>
                         <a href="/logout" class="btn btn-logout" title="Cerrar sesión">
-                            <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                            <i class="bi bi-box-arrow-right"></i> <span class="d-none d-sm-inline">Cerrar sesión</span>
                         </a>
-                        <button id="mode" class="mode-toggle-btn" title="Cambiar modo de color">
+                        <button id="mode" class="mode-toggle-btn" title="Cambiar modo de color" aria-label="Cambiar modo de color">
                             <i id="iconMode" class="bi"></i>
                         </button>
                     </div>
@@ -411,27 +704,27 @@
         </nav>
     </header>
 
-    <main>
+    <main class="container-fluid px-3 px-md-4 py-3">
         {% block body %}
         {% endblock %}
     </main>
 
-    <!-- Footer con arreglos para evitar activar el botón de envío -->
+    <!-- Footer optimizado para móviles -->
     <footer class="footer">
         <div class="container footer-content">
-            <div class="row">
+            <div class="row gy-4">
                 <!-- Brand and about section -->
-                <div class="col-lg-4 footer-section">
-                    <div class="footer-brand" onclick="event.stopPropagation();">
+                <div class="col-lg-4 col-md-6 footer-section">
+                    <div class="footer-brand">
                         <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
                         <span>Syste+</span>
                     </div>
                     <p class="mb-4 footer-description">Sistema de gestión de boletos y códigos QR para eventos. Solución simple y eficiente para administrar el acceso a tus eventos.</p>
                     <div class="footer-social">
-                        <a href="#" title="Facebook" onclick="event.stopPropagation();"><i class="bi bi-facebook"></i></a>
-                        <a href="#" title="Twitter" onclick="event.stopPropagation();"><i class="bi bi-twitter-x"></i></a>
-                        <a href="#" title="Instagram" onclick="event.stopPropagation();"><i class="bi bi-instagram"></i></a>
-                        <a href="#" title="LinkedIn" onclick="event.stopPropagation();"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" title="Facebook" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" title="Twitter" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" title="Instagram" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" title="LinkedIn" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
                     </div>
                 </div>
                 
@@ -439,10 +732,10 @@
                 <div class="col-lg-2 col-md-6 footer-section">
                     <h5>Enlaces rápidos</h5>
                     <ul class="footer-links">
-                        <li><a href="/" onclick="event.stopPropagation();"><i class="bi bi-chevron-right"></i> Inicio</a></li>
-                        <li><a href="/admin" onclick="event.stopPropagation();"><i class="bi bi-chevron-right"></i> Admin</a></li>
-                        <li><a href="/qr-scanner" onclick="event.stopPropagation();"><i class="bi bi-chevron-right"></i> Escanear QR</a></li>
-                        <li><a href="/home" onclick="event.stopPropagation();"><i class="bi bi-chevron-right"></i> Venta boletos</a></li>
+                        <li><a href="/"><i class="bi bi-chevron-right"></i> Inicio</a></li>
+                        <li><a href="/admin"><i class="bi bi-chevron-right"></i> Admin</a></li>
+                        <li><a href="/qr-scanner"><i class="bi bi-chevron-right"></i> Escanear QR</a></li>
+                        <li><a href="/home"><i class="bi bi-chevron-right"></i> Venta boletos</a></li>
                     </ul>
                 </div>
                 
@@ -450,10 +743,10 @@
                 <div class="col-lg-3 col-md-6 footer-section">
                     <h5>Ayuda y soporte</h5>
                     <ul class="footer-links">
-                        <li><a href="#" onclick="event.stopPropagation();"><i class="bi bi-question-circle"></i> Preguntas frecuentes</a></li>
-                        <li><a href="#" onclick="event.stopPropagation();"><i class="bi bi-book"></i> Documentación</a></li>
-                        <li><a href="#" onclick="event.stopPropagation();"><i class="bi bi-life-preserver"></i> Soporte técnico</a></li>
-                        <li><a href="#" onclick="event.stopPropagation();"><i class="bi bi-shield-check"></i> Políticas de privacidad</a></li>
+                        <li><a href="#"><i class="bi bi-question-circle"></i> Preguntas frecuentes</a></li>
+                        <li><a href="#"><i class="bi bi-book"></i> Documentación</a></li>
+                        <li><a href="#"><i class="bi bi-life-preserver"></i> Soporte técnico</a></li>
+                        <li><a href="#"><i class="bi bi-shield-check"></i> Políticas de privacidad</a></li>
                     </ul>
                 </div>
                 
@@ -461,10 +754,10 @@
                 <div class="col-lg-3 col-md-6 footer-section">
                     <h5>Contacto</h5>
                     <ul class="footer-links">
-                        <li><a href="mailto:joseromerolg@unimagdalena.edu.co" onclick="event.stopPropagation();"><i class="bi bi-envelope"></i> joseromerolg@unimagdalena.edu.co</a></li>
-                        <li><a href="tel:+573006405257" onclick="event.stopPropagation();"><i class="bi bi-telephone"></i> +57 300 640 5257</a></li>
-                        <li><a href="#" onclick="event.stopPropagation();"><i class="bi bi-geo-alt"></i> Santa Marta, Colombia</a></li>
-                        <li><a href="https://unimagdalena.edu.co" target="_blank" onclick="event.stopPropagation();"><i class="bi bi-building"></i> Universidad del Magdalena</a></li>
+                        <li><a href="mailto:joseromerolg@unimagdalena.edu.co"><i class="bi bi-envelope"></i> joseromerolg@unimagdalena.edu.co</a></li>
+                        <li><a href="tel:+573006405257"><i class="bi bi-telephone"></i> +57 300 640 5257</a></li>
+                        <li><a href="#"><i class="bi bi-geo-alt"></i> Santa Marta, Colombia</a></li>
+                        <li><a href="https://unimagdalena.edu.co" target="_blank"><i class="bi bi-building"></i> Universidad del Magdalena</a></li>
                     </ul>
                 </div>
             </div>
@@ -473,14 +766,14 @@
             
             <!-- Copyright section -->
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 mb-2 mb-md-0">
                     <p class="footer-copyright mb-0">
                         &copy; {{ now.year if now else '2025' }} <strong>Syste+</strong>. Todos los derechos reservados.
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <p class="footer-copyright mb-0">
-                        Diseñado por <a href="https://github.com/jlrg09" target="_blank" onclick="event.stopPropagation();">José Luis Romero González</a>
+                        Diseñado por <a href="https://github.com/jlrg09" target="_blank">José Luis Romero González</a>
                     </p>
                 </div>
             </div>
@@ -488,26 +781,20 @@
     </footer>
 
     <script>
-        // CÓDIGO CORREGIDO PARA EL MODO OSCURO/CLARO
+        // Código para el modo oscuro/claro
         document.addEventListener('DOMContentLoaded', function() {
             var body = document.querySelector("body");
-            var nav = document.querySelector("nav");
-            var footer = document.querySelector(".footer");
             var mode = document.getElementById("mode");
             var iconMode = document.getElementById("iconMode");
             
-            // Forzar el modo claro al cargar (resetear localStorage)
-            localStorage.setItem("colorPreference", "white");
-            var colorPreference = "white";
+            // Verificar si hay una preferencia guardada
+            var colorPreference = localStorage.getItem("colorPreference") || "white";
             
             function updateMode() {
                 if (colorPreference === "white") {
                     // Modo claro
                     body.classList.remove("bg-dark", "dark-mode");
                     body.classList.add("bg-light");
-                    
-                    nav.classList.remove("navbar-dark", "bg-dark");
-                    nav.classList.add("navbar-light", "bg-light");
                     
                     if (iconMode) {
                         iconMode.className = "bi bi-moon";
@@ -517,16 +804,13 @@
                     body.classList.remove("bg-light");
                     body.classList.add("bg-dark", "dark-mode");
                     
-                    nav.classList.remove("navbar-light", "bg-light");
-                    nav.classList.add("navbar-dark", "bg-dark");
-                    
                     if (iconMode) {
                         iconMode.className = "bi bi-sun";
                     }
                 }
             }
             
-            // Aplicar el modo claro al cargar la página
+            // Aplicar el modo al cargar la página
             updateMode();
             
             // Configurar el botón de cambio de modo
@@ -541,18 +825,46 @@
                 });
             }
             
-            // Prevenir que los clics en el footer activen el formulario
-            var footerElements = document.querySelectorAll('.footer *');
-            footerElements.forEach(function(element) {
-                element.addEventListener('click', function(event) {
-                    event.stopPropagation();
+            // Fix for navbar collapse on mobile
+            document.querySelectorAll('.navbar-nav .nav-link').forEach(function(navLink) {
+                navLink.addEventListener('click', function() {
+                    if (window.innerWidth < 992) {
+                        const bsCollapse = new bootstrap.Collapse(document.getElementById('navbarMain'));
+                        bsCollapse.hide();
+                    }
                 });
             });
             
-            var footer = document.querySelector('.footer');
-            if (footer) {
-                footer.addEventListener('click', function(event) {
-                    event.stopPropagation();
+            // Asegurarnos que los enlaces de navegación siempre tengan el texto visible en móvil
+            const addNavItems = function() {
+                document.querySelectorAll('.navbar-nav .nav-link').forEach(function(navLink) {
+                    const icon = navLink.querySelector('i');
+                    const text = navLink.textContent.trim();
+                    
+                    if (icon && !navLink.querySelector('span')) {
+                        // Si tiene icono pero no hay un span con el texto, creamos uno
+                        const textNode = document.createElement('span');
+                        textNode.textContent = text;
+                        navLink.innerHTML = ''; // Limpiar contenido
+                        navLink.appendChild(icon); // Añadir icono de nuevo
+                        navLink.appendChild(textNode); // Añadir texto en un span
+                    }
+                });
+            };
+            
+            // Ejecutar ahora y también después de un pequeño delay para asegurar
+            addNavItems();
+            setTimeout(addNavItems, 500);
+            
+            // Aplicar también cuando se añaden elementos dinámicamente
+            const observer = new MutationObserver(function() {
+                addNavItems();
+            });
+            
+            if (document.querySelector('.navbar-nav')) {
+                observer.observe(document.querySelector('.navbar-nav'), { 
+                    childList: true, 
+                    subtree: true 
                 });
             }
         });

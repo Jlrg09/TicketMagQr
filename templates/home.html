@@ -3,29 +3,29 @@
 {% block title %}Panel de Vendedor{% endblock %}
 
 {% block body %}
-<div class="container my-4">
+<div class="container-fluid my-4">
     <!-- Contenido dinámico por pestañas -->
     <div class="tab-content" id="sellerTabContent">
         <!-- Panel de Venta de Boletos -->
         <div class="tab-pane fade show active" id="vender" role="tabpanel">
             <div class="page-header fadeIn mb-4">
-                <h1>Venta de Boletos</h1>
+                <h1 class="h2">Venta de Boletos</h1>
                 <div>
                     <button id="refresh-stats-btn" class="btn btn-outline-primary">
-                        <i class="bi bi-arrow-clockwise"></i> Actualizar Datos
+                        <i class="bi bi-arrow-clockwise"></i> <span class="d-none d-sm-inline">Actualizar</span>
                     </button>
                 </div>
             </div>
             
             <div class="row">
-                <!-- Card informativa -->
-                <div class="col-lg-4 mb-4">
+                <!-- Card informativa - En móviles aparece primero en el orden -->
+                <div class="col-lg-4 mb-4 order-lg-1 order-2">
                     <div class="card border-0 bg-gradient-primary h-100 text-white">
-                        <div class="card-body position-relative overflow-hidden">
+                        <div class="card-body position-relative overflow-hidden py-4">
                             <div class="icon-background">
                                 <i class="bi bi-ticket-perforated-fill"></i>
                             </div>
-                            <h3 class="mb-3">Venta de Boletos</h3>
+                            <h3 class="mb-3 fs-4">Venta de Boletos</h3>
                             <p class="mb-4">Completa el formulario para generar y enviar boletos a tus clientes.</p>
                             <div class="ticket-info mb-3">
                                 <div class="d-flex align-items-center mb-2">
@@ -51,16 +51,16 @@
                     </div>
                 </div>
                 
-                <!-- Formulario de registro -->
-                <div class="col-lg-8">
+                <!-- Formulario de registro - En móviles aparece segundo en el orden -->
+                <div class="col-lg-8 mb-4 order-lg-2 order-1">
                     <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-header bg-success text-white d-flex align-items-center">
+                        <div class="card-header bg-success text-white d-flex align-items-center py-3">
                             <i class="bi bi-person-plus-fill me-2 fs-4"></i>
-                            <h4 class="mb-0">Registro de Usuario</h4>
+                            <h4 class="mb-0 fs-5">Registro de Usuario</h4>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-3 p-md-4">
                             <form id="register" action="">
-                                <div class="row">
+                                <div class="row g-3">
                                     <div class="col-md-6 mb-3">
                                         <label for="fullname" class="form-label">Nombre Completo</label>
                                         <div class="input-group">
@@ -72,12 +72,12 @@
                                         <label for="email" class="form-label">Correo Electrónico</label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
-                                            <input type="email" class="form-control" placeholder="email@ejemplo.com" id="email" required>
+                                            <input type="email" class="form-control" placeholder="email@ejemplo.com" id="email" required autocomplete="email">
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div class="row">
+                                <div class="row g-3">
                                     <div class="col-md-6 mb-3">
                                         <label for="type" class="form-label">Tipo de Boleto</label>
                                         <div class="input-group">
@@ -98,9 +98,10 @@
                                 </div>
 
                                 <div class="d-grid mt-4">
-                                    <button type="button" id="submit" class="btn btn-success btn-lg" style="display: block !important; width: 100%; padding: 15px; white-space: nowrap !important; overflow: visible !important; text-align: center !important;">
+                                    <!-- Botón corregido: más grande y con texto visible -->
+                                    <button type="button" id="submit" class="btn btn-success btn-lg py-3 px-4 w-100">
                                         <i class="bi bi-send-fill me-2"></i>
-                                        <span style="display: inline-block !important;">Enviar Boletos</span>
+                                        <span class="submit-text">Enviar Boletos</span>
                                     </button>
                                 </div>
                             </form>
@@ -109,10 +110,10 @@
                     
                     <!-- Estadísticas rápidas -->
                     <div class="card border-0 bg-gradient-light shadow-sm">
-                        <div class="card-body">
+                        <div class="card-body p-3 p-md-4">
                             <h5 class="card-title">Estadísticas Rápidas</h5>
-                            <div class="row text-center mt-3">
-                                <div class="col-md-4">
+                            <div class="row text-center mt-3 g-2">
+                                <div class="col-4">
                                     <div class="quick-stat">
                                         <div class="stat-icon bg-primary text-white">
                                             <i class="bi bi-ticket"></i>
@@ -121,21 +122,21 @@
                                         <div class="stat-value" id="total-tickets">-</div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-4">
                                     <div class="quick-stat">
                                         <div class="stat-icon bg-success text-white">
                                             <i class="bi bi-check-circle"></i>
                                         </div>
-                                        <div class="stat-label">Boletos Usados</div>
+                                        <div class="stat-label">Usados</div>
                                         <div class="stat-value" id="used-tickets">-</div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-4">
                                     <div class="quick-stat">
                                         <div class="stat-icon bg-warning text-dark">
                                             <i class="bi bi-star"></i>
                                         </div>
-                                        <div class="stat-label">Boletos VIP</div>
+                                        <div class="stat-label">VIP</div>
                                         <div class="stat-value" id="vip-tickets">-</div>
                                     </div>
                                 </div>
@@ -149,17 +150,17 @@
         <!-- Panel de Estadísticas -->
         <div class="tab-pane fade" id="estadisticas" role="tabpanel">
             <div class="page-header fadeIn mb-4">
-                <h1>Estado de Boletos</h1>
+                <h1 class="h2">Estado de Boletos</h1>
                 <div>
                     <button id="refresh-stats-dashboard" class="btn btn-outline-primary">
-                        <i class="bi bi-arrow-clockwise"></i> Actualizar Estadísticas
+                        <i class="bi bi-arrow-clockwise"></i> <span class="d-none d-sm-inline">Actualizar</span>
                     </button>
                 </div>
             </div>
             
-            <div class="row mb-4">
-                <div class="col-md-4 mb-3">
-                    <div class="stats-card primary">
+            <div class="row g-3 mb-4">
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <div class="stats-card primary h-100">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <span class="icon">
@@ -171,8 +172,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <div class="stats-card success">
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <div class="stats-card success h-100">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <span class="icon">
@@ -184,8 +185,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <div class="stats-card warning">
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <div class="stats-card warning h-100">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <span class="icon">
@@ -201,8 +202,8 @@
             
             <!-- Tabla de boletos recientes -->
             <div class="card shadow-sm">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-list-check me-2"></i> Boletos Recientes</h5>
+                <div class="card-header bg-light d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <h5 class="mb-0 fs-5"><i class="bi bi-list-check me-2"></i> Boletos Recientes</h5>
                     <div class="input-group" style="max-width: 300px;">
                         <input type="text" id="search-tickets" class="form-control" placeholder="Buscar boleto, email...">
                         <button class="btn btn-outline-secondary" type="button">
@@ -219,7 +220,7 @@
                                     <th>Email</th>
                                     <th>Tipo</th>
                                     <th>Estado</th>
-                                    <th>Fecha Creación</th>
+                                    <th class="d-none d-md-table-cell">Fecha</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -237,10 +238,10 @@
         <!-- Panel de Escáner QR -->
         <div class="tab-pane fade" id="scanner" role="tabpanel">
             <div class="page-header fadeIn mb-4">
-                <h1>Escáner de QR</h1>
+                <h1 class="h2">Escáner de QR</h1>
                 <div>
                     <a href="/qr-scanner" class="btn btn-primary">
-                        <i class="bi bi-qrcode"></i> Abrir Escáner
+                        <i class="bi bi-qrcode"></i> <span class="d-none d-sm-inline">Abrir Escáner</span>
                     </a>
                 </div>
             </div>
@@ -248,20 +249,20 @@
             <div class="card shadow-sm mb-4">
                 <div class="card-body position-relative overflow-hidden">
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-lg-8">
                             <h4 class="mb-3 text-primary"><i class="bi bi-qrcode me-2"></i> Escáner de QR</h4>
-                            <p class="lead">Verifica y gestiona el acceso de boletos mediante códigos QR</p>
+                            <p class="lead fs-5">Verifica y gestiona el acceso de boletos mediante códigos QR</p>
                             <ul class="list-unstyled">
                                 <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Escanea códigos QR de boletos</li>
                                 <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Verifica validez y estado de los boletos</li>
                                 <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Marca boletos como usados</li>
                                 <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Consulta información detallada de cada boleto</li>
                             </ul>
-                            <a href="/qr-scanner" class="btn btn-primary btn-lg mt-3 pulse">
-                                <i class="bi bi-qrcode me-2"></i> Abrir Escáner QR
+                            <a href="/qr-scanner" class="btn btn-primary btn-lg mt-3 pulse d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-qrcode"></i> Abrir Escáner QR
                             </a>
                         </div>
-                        <div class="col-md-4 d-flex align-items-center justify-content-center">
+                        <div class="col-lg-4 d-none d-lg-flex align-items-center justify-content-center">
                             <i class="bi bi-qrcode icon-bg"></i>
                         </div>
                     </div>
@@ -271,7 +272,7 @@
             <!-- Últimos escaneos -->
             <div class="card shadow-sm">
                 <div class="card-header bg-light">
-                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i> Escaneos Recientes</h5>
+                    <h5 class="mb-0 fs-5"><i class="bi bi-clock-history me-2"></i> Escaneos Recientes</h5>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -281,8 +282,8 @@
                                     <th>Boleto</th>
                                     <th>Email</th>
                                     <th>Tipo</th>
-                                    <th>Estado</th>
-                                    <th>Fecha de Uso</th>
+                                    <th class="d-none d-md-table-cell">Estado</th>
+                                    <th class="d-none d-md-table-cell">Fecha de Uso</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -301,7 +302,7 @@
 
 <!-- Modal para detalles del boleto -->
 <div class="modal fade" id="ticketDetailModal" tabindex="-1" aria-labelledby="ticketDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="ticketDetailModalLabel">
@@ -311,7 +312,7 @@
             </div>
             <div class="modal-body">
                 <div class="ticket-details">
-                    <div class="row mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <strong>Boleto:</strong>
@@ -325,7 +326,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <strong>Tipo:</strong>
@@ -339,7 +340,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-12">
                             <div class="detail-item">
                                 <strong>Email:</strong>
@@ -347,7 +348,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <div class="detail-item">
                                 <strong>Fecha Creación:</strong>
@@ -361,7 +362,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-12">
                             <div class="detail-item">
                                 <strong>Vendedor:</strong>
@@ -372,7 +373,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-secondary btn-lg w-100" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -389,7 +390,7 @@
     z-index: 1050;
     justify-content: center; 
     align-items: center;">
-    <div class="card shadow-lg border-0" style="width: 300px;">
+    <div class="card shadow-lg border-0" style="width: 280px; max-width: 90%;">
         <div class="card-body text-center p-4">
             <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
                 <span class="visually-hidden">Cargando...</span>
@@ -407,18 +408,20 @@
     .page-header {
         background-color: #fff;
         border-radius: 10px;
-        padding: 1.5rem;
+        padding: 1rem 1.25rem;
         margin-bottom: 1.5rem;
         box-shadow: 0 6px 15px -3px rgba(0, 0, 0, 0.08);
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
     }
     
     .stats-card {
         background-color: #fff;
         border-radius: 10px;
-        padding: 1.5rem;
+        padding: 1.25rem;
         height: 100%;
         box-shadow: 0 6px 15px -3px rgba(0, 0, 0, 0.08);
         border-left: 4px solid #3a86ff;
@@ -431,8 +434,8 @@
     }
     
     .stats-card .icon {
-        font-size: 2rem;
-        padding: 15px;
+        font-size: 1.75rem;
+        padding: 12px;
         border-radius: 50%;
         margin-bottom: 1rem;
         display: inline-block;
@@ -473,7 +476,7 @@
     
     .stats-card h3 {
         font-weight: 700;
-        font-size: 1.75rem;
+        font-size: 1.5rem;
         margin-bottom: 0;
     }
     
@@ -545,12 +548,20 @@
     
     /* Estilos para el modal de detalles */
     .ticket-details .detail-item {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
+        display: flex;
+        flex-direction: column;
     }
     
-    .ticket-details .detail-item strong {
-        min-width: 120px;
-        display: inline-block;
+    @media (min-width: 576px) {
+        .ticket-details .detail-item {
+            flex-direction: row;
+        }
+        
+        .ticket-details .detail-item strong {
+            min-width: 120px;
+            margin-right: 8px;
+        }
     }
 
     /* Estilos mejorados para el botón de envío */
@@ -562,6 +573,17 @@
         box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
         background-color: #28a745;
         border-color: #28a745;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    #submit .submit-text {
+        display: inline-block !important;
+        visibility: visible !important;
+        font-size: 1.1rem;
     }
     
     #submit:hover {
@@ -585,7 +607,7 @@
     .form-control, .form-select {
         border-radius: 0 6px 6px 0;
         border: 1px solid #dee2e6;
-        padding: 0.6rem 1rem;
+        padding: 0.6rem 0.75rem;
         transition: all 0.2s;
     }
 
@@ -657,14 +679,14 @@
     }
     
     .stat-icon {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 10px;
-        font-size: 1.5rem;
+        margin: 0 auto 8px;
+        font-size: 1.25rem;
     }
     
     .stat-label {
@@ -678,9 +700,54 @@
     }
     
     .stat-value {
-        font-size: 1.5rem;
+        font-size: 1.35rem;
         font-weight: 700;
-        margin-top: 5px;
+        margin-top: 3px;
+    }
+    
+    /* Mejoras para dispositivos móviles */
+    @media (max-width: 767px) {
+        .page-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .quick-stat .stat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        
+        .quick-stat .stat-label {
+            font-size: 0.75rem;
+        }
+        
+        .quick-stat .stat-value {
+            font-size: 1.25rem;
+        }
+        
+        .stats-card .icon {
+            font-size: 1.5rem;
+            padding: 10px;
+        }
+        
+        .stats-card h3 {
+            font-size: 1.35rem;
+        }
+        
+        .ticket-info {
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .info-icon {
+            width: 25px;
+            height: 25px;
+        }
+    }
+    
+    /* Mostrar notificaciones por encima del modal */
+    .notification-toast {
+        z-index: 1060 !important;
     }
 </style>
 
@@ -717,7 +784,7 @@
                 link.className = index === 0 ? 'nav-link active' : 'nav-link';
                 link.id = 'nav-' + item.id;
                 link.href = '#' + item.id;
-                link.innerHTML = `<i class="bi ${item.icon}"></i> ${item.text}`;
+                link.innerHTML = `<i class="bi ${item.icon} me-md-2"></i> <span>${item.text}</span>`;
                 
                 li.appendChild(link);
                 navbar.appendChild(li);
@@ -823,10 +890,10 @@
                                 <td>${ticket.email || '-'}</td>
                                 <td>${ticket.vip ? '<span class="badge bg-warning text-dark">VIP</span>' : '<span class="badge bg-secondary">Normal</span>'}</td>
                                 <td>${ticket.usado ? '<span class="badge bg-danger">Usado</span>' : '<span class="badge bg-success">Disponible</span>'}</td>
-                                <td>${ticket.fecha || ticket.fecha_creacion || '-'}</td>
+                                <td class="d-none d-md-table-cell">${ticket.fecha || ticket.fecha_creacion || '-'}</td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-primary view-details" data-ticket='${JSON.stringify(ticket)}'>
-                                        <i class="bi bi-eye"></i> Ver detalles
+                                        <i class="bi bi-eye"></i> <span class="d-none d-md-inline">Ver</span>
                                     </button>
                                 </td>
                             `;
@@ -872,11 +939,11 @@
                                 <td>${scan.boleto || '-'}</td>
                                 <td>${scan.email || '-'}</td>
                                 <td>${scan.vip ? '<span class="badge bg-warning text-dark">VIP</span>' : '<span class="badge bg-secondary">Normal</span>'}</td>
-                                <td>${scan.usado ? '<span class="badge bg-danger">Usado</span>' : '<span class="badge bg-success">Disponible</span>'}</td>
-                                <td>${scan.fecha || '-'}</td>
+                                <td class="d-none d-md-table-cell">${scan.usado ? '<span class="badge bg-danger">Usado</span>' : '<span class="badge bg-success">Disponible</span>'}</td>
+                                <td class="d-none d-md-table-cell">${scan.fecha || '-'}</td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-primary view-details" data-ticket='${JSON.stringify(scan)}'>
-                                        <i class="bi bi-eye"></i> Ver detalles
+                                        <i class="bi bi-eye"></i> <span class="d-none d-md-inline">Ver</span>
                                     </button>
                                 </td>
                             `;
@@ -921,7 +988,7 @@
             submit.disabled = true;
             loadingModal.style.display = "flex";
 
-            const email = document.getElementById("email").value;
+            const email = document.getElementById("email").value.toLowerCase(); // Normalizar email a minúsculas
             const fullname = document.getElementById("fullname").value;
             const tickets = document.getElementById("tickets").value;
             const ticket = document.getElementById("type").value;
@@ -967,7 +1034,7 @@
                 '<span class="badge bg-danger">Usado</span>' : 
                 '<span class="badge bg-success">Disponible</span>';
             document.getElementById('modal-email').textContent = ticket.email || '-';
-            document.getElementById('modal-fecha-creacion').textContent = ticket.fecha_creacion || '-';
+            document.getElementById('modal-fecha-creacion').textContent = ticket.fecha_creacion || ticket.fecha || '-';
             document.getElementById('modal-fecha-uso').textContent = ticket.fecha_uso || '-';
             document.getElementById('modal-vendedor').textContent = ticket.vendedor || ticket.vendedor_email || '-';
             
@@ -1003,7 +1070,8 @@
             notifContainer.style.top = "20px";
             notifContainer.style.right = "20px";
             notifContainer.style.zIndex = "1060";
-            notifContainer.style.maxWidth = "350px";
+            notifContainer.style.maxWidth = "90%";
+            notifContainer.style.width = "350px";
             notifContainer.style.boxShadow = "0 5px 15px rgba(0,0,0,0.15)";
             notifContainer.innerHTML = `
                 <strong>${title}</strong> ${message}

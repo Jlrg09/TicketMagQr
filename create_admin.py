@@ -1,9 +1,9 @@
 import bcrypt
 from database import session_credenciales, Usuario, BaseCredenciales, engine_credenciales
 
-admin_email = "joseromerolg@unimagdalena.edu.co"
-admin_password = "1207311309Fran"
-admin_code = "123"  
+admin_email = "administrador@systeplus.com"
+admin_password = "administrador"
+admin_code = "123456"  
 
 BaseCredenciales.metadata.create_all(engine_credenciales)
 

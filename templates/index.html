@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
@@ -13,42 +13,63 @@
             align-items: center;
             min-height: 100vh;
             background: linear-gradient(135deg, #57b7ff 0%, #6dd5ed 100%);
+            padding: 15px;
         }
         .login-form {
             width: 100%;
             max-width: 400px;
-            padding: 2rem 2rem 1.5rem 2rem;
+            padding: 1.5rem;
             background-color: #fff;
             border-radius: 16px;
             box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
             position: relative;
         }
         .login-form .avatar {
-            width: 72px;
-            height: 72px;
+            width: 64px;
+            height: 64px;
             background: #e3f6ff;
             color: #57b7ff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.8rem;
+            font-size: 2.4rem;
             margin: 0 auto 1rem auto;
             box-shadow: 0 2px 8px rgba(87,183,255,0.15);
         }
         .login-form h2 {
             font-weight: 600;
             color: #333;
+            font-size: 1.5rem;
         }
         .form-label {
             font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+        .form-control {
+            padding: 0.6rem 0.75rem;
+            font-size: 1rem;
+            height: auto;
         }
         .form-control:focus {
             border-color: #57b7ff;
-            box-shadow: 0 0 0 .2rem rgba(87,183,255,0.15);
+            box-shadow: 0 0 0 0.2rem rgba(87,183,255,0.15);
+        }
+        .input-group-text {
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
         .admin-toggle {
             margin-top: 15px;
+            cursor: pointer;
+        }
+        .form-check-input {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+        .form-check-label {
+            padding-top: 1px;
             cursor: pointer;
         }
         .admin-code-field {
@@ -68,9 +89,14 @@
             font-size: 1.1rem;
             box-shadow: 0 2px 8px rgba(87,183,255,0.15);
             transition: background 0.2s;
+            padding: 0.6rem 1rem;
         }
-        .btn-primary:hover {
+        .btn-primary:hover, .btn-primary:focus {
             background: linear-gradient(90deg, #6dd5ed 0%, #57b7ff 100%);
+            box-shadow: 0 4px 10px rgba(87,183,255,0.25);
+        }
+        .btn-primary:active {
+            transform: translateY(1px);
         }
         .forgot-link {
             display: block;
@@ -94,19 +120,43 @@
             display: none;
             font-size: 0.97rem;
         }
+        
+        /* Mejoras para dispositivos táctiles */
+        @media (max-width: 576px) {
+            .login-form {
+                padding: 1.25rem;
+            }
+            .login-form .avatar {
+                width: 56px;
+                height: 56px;
+                font-size: 2rem;
+            }
+            .form-control, .input-group-text, .btn-primary {
+                padding: 0.75rem;
+                font-size: 16px; /* Evita zoom en iOS */
+            }
+            .form-check-input {
+                width: 20px;
+                height: 20px;
+            }
+            .btn-primary {
+                margin-top: 0.5rem;
+                padding: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="login-form shadow-lg">
         <div class="avatar mb-2"><i class="bi bi-person-circle"></i></div>
         <h2 class="text-center mb-3">Iniciar Sesión</h2>
-        <div id="errorMsg" class="error-message"></div>
-        <form id="loginForm" action="/login" method="post" autocomplete="off">
+        <div id="errorMsg" class="error-message" role="alert"></div>
+        <form id="loginForm" action="/login" method="post">
             <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
-                    <input type="email" class="form-control" id="email" name="email" required autofocus autocomplete="username">
+                    <input type="email" class="form-control" id="email" name="email" required autofocus autocomplete="email" inputmode="email">
                 </div>
             </div>
             <div class="mb-3">
@@ -114,6 +164,9 @@
                 <div class="input-group">
                     <span class="input-group-text bg-white"><i class="bi bi-lock"></i></span>
                     <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
+                    <button class="btn btn-outline-secondary border-start-0" type="button" id="togglePassword" tabindex="-1">
+                        <i class="bi bi-eye"></i>
+                    </button>
                 </div>
             </div>
             <a href="/forgot-password" class="forgot-link">¿Olvidaste tu contraseña?</a>
@@ -127,10 +180,10 @@
                 <label for="admin_code" class="form-label">Código de administrador</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white"><i class="bi bi-key"></i></span>
-                    <input type="password" class="form-control" id="admin_code" name="admin_code" autocomplete="off">
+                    <input type="password" class="form-control" id="admin_code" name="admin_code">
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100 mt-3">Ingresar</button>
+            <button type="submit" class="btn btn-primary w-100 py-3 mt-3">Ingresar</button>
         </form>
     </div>
 
@@ -144,12 +197,32 @@
             }
         });
 
-        // Ejemplo de manejo de error en el frontend (puedes reemplazarlo con tu lógica de backend)
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+
+        // Normalizar email (convertir a minúsculas antes de enviar)
         document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const email = document.getElementById('email').value.trim();
+            const emailInput = document.getElementById('email');
             const password = document.getElementById('password').value;
             let errorMsg = '';
-            if (!email || !email.includes('@')) {
+            
+            // Normalizar email a minúsculas
+            emailInput.value = emailInput.value.toLowerCase().trim();
+            
+            if (!emailInput.value || !emailInput.value.includes('@')) {
                 errorMsg = 'Por favor, ingresa un correo electrónico válido.';
             } else if (!password) {
                 errorMsg = 'Por favor, ingresa tu contraseña.';
@@ -157,8 +230,12 @@
 
             if (errorMsg) {
                 e.preventDefault();
-                document.getElementById('errorMsg').textContent = errorMsg;
-                document.getElementById('errorMsg').style.display = 'block';
+                const errorElement = document.getElementById('errorMsg');
+                errorElement.textContent = errorMsg;
+                errorElement.style.display = 'block';
+                // Agregar animación para llamar la atención
+                errorElement.classList.add('shake');
+                setTimeout(() => errorElement.classList.remove('shake'), 500);
             } else {
                 document.getElementById('errorMsg').style.display = 'none';
             }
