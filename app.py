@@ -530,6 +530,146 @@ def recent_scans():
             return jsonify({"status": "error", "message": str(e)}), 500
     return jsonify({"status": "error", "message": "No autorizado"}), 401
 
+# Ruta para actualizar usuario
+@app.route('/admin/update_user', methods=['POST'])
+def update_user():
+    if not validateAdminSession():
+        return jsonify(response="failed", message="Acceso denegado")
+    
+    try:
+        data = request.get_json()
+        user_id = data.get('id')
+        # Normalizar email a minúsculas
+        email = data.get('email').lower() if data.get('email') else None
+        password = data.get('password')
+        is_admin = data.get('is_admin', False)
+        admin_code = data.get('admin_code')
+        
+        # Verificar si el usuario existe
+        user = session_credenciales.query(Usuario).filter(Usuario.id == user_id).first()
+        if not user:
+            return jsonify(response="failed", message="Usuario no encontrado")
+        
+        # Verificar si el email ya está en uso por otro usuario
+        existing_user = session_credenciales.query(Usuario).filter(Usuario.email == email, Usuario.id != user_id).first()
+        if existing_user:
+            return jsonify(response="failed", message="El email ya está en uso por otro usuario")
+        
+        # Actualizar información del usuario
+        user.email = email
+        user.is_admin = is_admin
+        
+        # Si se proporciona contraseña nueva, actualizarla
+        if password:
+            # Hashear la contraseña
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            user.password = hashed_password
+        
+        # Si es admin y se proporciona código, actualizarlo
+        if is_admin and admin_code:
+            user.admin_code = admin_code
+        elif not is_admin:
+            user.admin_code = None
+        
+        session_credenciales.commit()
+        
+        return jsonify(response="success", message="Usuario actualizado con éxito")
+    except Exception as e:
+        print(e)
+        return jsonify(response="failed", message=f"Error al actualizar usuario: {str(e)}")
+
+
+# Ruta para eliminar usuario
+@app.route('/admin/delete_user', methods=['POST'])
+def delete_user():
+    if not validateAdminSession():
+        return jsonify(response="failed", message="Acceso denegado")
+    
+    try:
+        data = request.get_json()
+        user_id = data.get('id')
+        
+        # No permitir eliminar al usuario actualmente conectado
+        if user_id == cloud.get('user_id'):
+            return jsonify(response="failed", message="No puedes eliminar tu propia cuenta")
+        
+        # Verificar si el usuario existe
+        user = session_credenciales.query(Usuario).filter(Usuario.id == user_id).first()
+        if not user:
+            return jsonify(response="failed", message="Usuario no encontrado")
+        
+        session_credenciales.delete(user)
+        session_credenciales.commit()
+        
+        return jsonify(response="success", message="Usuario eliminado con éxito")
+    except Exception as e:
+        print(e)
+        return jsonify(response="failed", message=f"Error al eliminar usuario: {str(e)}")
+
+
+# Ruta para actualizar boleto/código
+@app.route('/admin/update_ticket', methods=['POST'])
+def update_ticket():
+    if not validateAdminSession():
+        return jsonify(response="failed", message="Acceso denegado")
+    
+    try:
+        data = request.get_json()
+        ticket_id = data.get('id')
+        # Normalizar email a minúsculas
+        email = data.get('email').lower() if data.get('email') else None
+        vendor = data.get('vendedor')
+        is_vip = data.get('vip', False)
+        is_used = data.get('usado', False)
+        
+        # Verificar si el boleto existe
+        ticket = session_codigos.query(Codigo).filter(Codigo.id == ticket_id).first()
+        if not ticket:
+            return jsonify(response="failed", message="Boleto no encontrado")
+        
+        # Actualizar información del boleto
+        ticket.email = email
+        ticket.vendedor_email = vendor
+        ticket.vip = is_vip
+        
+        # Si cambia el estado de uso
+        if ticket.usado != is_used:
+            ticket.usado = is_used
+            if is_used:
+                ticket.fecha_uso = datetime.utcnow()
+            else:
+                ticket.fecha_uso = None
+        
+        session_codigos.commit()
+        
+        return jsonify(response="success", message="Boleto actualizado con éxito")
+    except Exception as e:
+        print(e)
+        return jsonify(response="failed", message=f"Error al actualizar boleto: {str(e)}")
+
+
+# Ruta para eliminar boleto/código
+@app.route('/admin/delete_ticket', methods=['POST'])
+def delete_ticket():
+    if not validateAdminSession():
+        return jsonify(response="failed", message="Acceso denegado")
+    
+    try:
+        data = request.get_json()
+        ticket_id = data.get('id')
+        
+        # Verificar si el boleto existe
+        ticket = session_codigos.query(Codigo).filter(Codigo.id == ticket_id).first()
+        if not ticket:
+            return jsonify(response="failed", message="Boleto no encontrado")
+        
+        session_codigos.delete(ticket)
+        session_codigos.commit()
+        
+        return jsonify(response="success", message="Boleto eliminado con éxito")
+    except Exception as e:
+        print(e)
+        return jsonify(response="failed", message=f"Error al eliminar boleto: {str(e)}")
 
 if __name__ == "__main__":
     load_dotenv()

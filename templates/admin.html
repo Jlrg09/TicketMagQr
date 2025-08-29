@@ -399,6 +399,105 @@
     </div>
 </div>
 
+<!-- Modal para editar usuario -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">
+                    <i class="bi bi-person-gear me-2"></i> Editar Usuario
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId">
+                    <div class="mb-3">
+                        <label for="editUserEmail" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="editUserEmail" required autocomplete="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserPassword" class="form-label">Nueva contraseña (dejar en blanco para no cambiar)</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="editUserPassword" placeholder="Dejar en blanco para mantener la actual">
+                            <button class="btn btn-outline-secondary" type="button" id="toggleEditPasswordBtn">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">Si no quieres cambiar la contraseña, deja este campo en blanco.</small>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="editIsAdmin">
+                        <label class="form-check-label" for="editIsAdmin">
+                            ¿Es administrador?
+                        </label>
+                    </div>
+                    <div class="mb-3" id="editAdminCodeContainer" style="display: none;">
+                        <label for="editUserAdminCode" class="form-label">Código de administrador</label>
+                        <input type="password" class="form-control" id="editUserAdminCode">
+                        <small class="text-muted">Este código secreto permitirá al usuario iniciar sesión como administrador.</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer flex-column flex-sm-row">
+                <button type="button" class="btn btn-outline-secondary w-100 w-sm-auto mb-2 mb-sm-0" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary w-100 w-sm-auto" id="updateUserBtn">
+                    <i class="bi bi-save me-2"></i> Actualizar Usuario
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar boleto -->
+<div class="modal fade" id="editTicketModal" tabindex="-1" aria-labelledby="editTicketModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTicketModalLabel">
+                    <i class="bi bi-ticket-perforated me-2"></i> Editar Boleto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editTicketForm">
+                    <input type="hidden" id="editTicketId">
+                    <div class="mb-3">
+                        <label for="editTicketEmail" class="form-label">Email asignado</label>
+                        <input type="email" class="form-control" id="editTicketEmail" autocomplete="email">
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="editTicketType" class="form-label">Tipo de boleto</label>
+                            <select class="form-select" id="editTicketType">
+                                <option value="normal">Normal</option>
+                                <option value="vip">VIP</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editTicketStatus" class="form-label">Estado del boleto</label>
+                            <select class="form-select" id="editTicketStatus">
+                                <option value="0">Disponible</option>
+                                <option value="1">Usado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTicketVendor" class="form-label">Vendedor</label>
+                        <input type="text" class="form-control" id="editTicketVendor" placeholder="Email del vendedor">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer flex-column flex-sm-row">
+                <button type="button" class="btn btn-outline-secondary w-100 w-sm-auto mb-2 mb-sm-0" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary w-100 w-sm-auto" id="updateTicketBtn">
+                    <i class="bi bi-save me-2"></i> Actualizar Boleto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal para detalles del boleto -->
 <div class="modal fade" id="ticketDetailModal" tabindex="-1" aria-labelledby="ticketDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
@@ -471,10 +570,40 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer flex-column flex-sm-row">
-                <button type="button" class="btn btn-secondary w-100 w-sm-auto mb-2 mb-sm-0" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-success w-100 w-sm-auto" id="modal-mark-used" style="display: none;">
-                    <i class="bi bi-check-circle me-2"></i> Marcar como Usado
+            <div class="modal-footer d-flex justify-content-between">
+                <div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-success" id="modal-mark-used" style="display: none;">
+                        <i class="bi bi-check-circle me-2"></i> Marcar como Usado
+                    </button>
+                    <button type="button" class="btn btn-primary" id="modal-edit-ticket">
+                        <i class="bi bi-pencil me-2"></i> Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">
+                    <i class="bi bi-exclamation-triangle me-2 text-danger"></i> Confirmar eliminación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmDeleteMessage">¿Estás seguro que deseas eliminar este elemento? Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="bi bi-trash me-2"></i> Eliminar
                 </button>
             </div>
         </div>
@@ -809,6 +938,10 @@
 <script>
     // Inicializar navegación mejorada para el panel
     document.addEventListener('DOMContentLoaded', function() {
+        // Variables para gestionar eliminación
+        let deleteItemType = '';
+        let deleteItemId = '';
+
         // Añadir opciones de navegación al navbar
         const navbar = document.querySelector('.navbar-nav');
         
@@ -832,7 +965,7 @@
                     link.className = index === 0 ? 'nav-link active' : 'nav-link';
                     link.id = 'nav-' + item.id;
                     link.href = '#' + item.id;
-                    link.innerHTML = `<i class="bi ${item.icon} me-md-2"></i> <span class="d-none d-md-inline">${item.text}</span>`;
+                    link.innerHTML = `<i class="bi ${item.icon} me-md-2"></i> <span>${item.text}</span>`;
                     
                     li.appendChild(link);
                     navbar.appendChild(li);
@@ -852,7 +985,7 @@
                     const link = document.createElement('a');
                     link.className = 'nav-link';
                     link.href = '/admin/qr-scanner';
-                    link.innerHTML = '<i class="bi bi-qr-code-scan me-md-2"></i> <span class="d-none d-md-inline">Escáner QR</span>';
+                    link.innerHTML = '<i class="bi bi-qr-code-scan me-md-2"></i> <span>Escáner QR</span>';
                     
                     li.appendChild(link);
                     navbar.appendChild(li);
@@ -891,8 +1024,17 @@
         
         // Toggle user password visibility
         document.getElementById('toggleUserPasswordBtn').addEventListener('click', function() {
-            const passwordInput = document.getElementById('userPassword');
-            const icon = this.querySelector('i');
+            togglePassword('userPassword', this);
+        });
+        
+        // Toggle edit user password visibility
+        document.getElementById('toggleEditPasswordBtn').addEventListener('click', function() {
+            togglePassword('editUserPassword', this);
+        });
+        
+        function togglePassword(inputId, button) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = button.querySelector('i');
             
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
@@ -903,11 +1045,16 @@
                 icon.classList.remove('bi-eye-slash');
                 icon.classList.add('bi-eye');
             }
-        });
+        }
         
         // Mostrar campo de código admin al crear usuario
         document.getElementById('isAdmin').addEventListener('change', function() {
             document.getElementById('adminCodeContainer').style.display = this.checked ? 'block' : 'none';
+        });
+        
+        // Mostrar campo de código admin al editar usuario
+        document.getElementById('editIsAdmin').addEventListener('change', function() {
+            document.getElementById('editAdminCodeContainer').style.display = this.checked ? 'block' : 'none';
         });
         
         // Email config form handler
@@ -982,6 +1129,113 @@
                 showNotification('Error al crear usuario', 'danger');
             });
         });
+
+        // Editar usuario
+        document.getElementById('updateUserBtn').addEventListener('click', function() {
+            const userId = document.getElementById('editUserId').value;
+            const email = document.getElementById('editUserEmail').value.toLowerCase();
+            const password = document.getElementById('editUserPassword').value;
+            const isAdmin = document.getElementById('editIsAdmin').checked;
+            const adminCode = document.getElementById('editUserAdminCode').value;
+
+            const userData = { 
+                id: userId,
+                email: email, 
+                is_admin: isAdmin
+            };
+
+            // Sólo incluir password si se ingresó uno nuevo
+            if (password) {
+                userData.password = password;
+            }
+
+            // Incluir admin_code solo si es admin y hay un código
+            if (isAdmin && adminCode) {
+                userData.admin_code = adminCode;
+            }
+            
+            fetch('/admin/update_user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.response === 'success') {
+                    showNotification('Usuario actualizado con éxito', 'success');
+                    document.getElementById('editUserModal').querySelector('.btn-close').click();
+                    loadUsers();
+                } else {
+                    showNotification('Error: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error al actualizar usuario', 'danger');
+            });
+        });
+
+        // Editar boleto desde el botón en el modal de detalles
+        document.getElementById('modal-edit-ticket').addEventListener('click', function() {
+            const ticketId = document.getElementById('modal-id').textContent;
+            const ticketEmail = document.getElementById('modal-email').textContent;
+            const ticketVendor = document.getElementById('modal-vendedor').textContent;
+            const ticketType = document.getElementById('modal-tipo').textContent.includes('VIP') ? 'vip' : 'normal';
+            const ticketStatus = document.getElementById('modal-estado').textContent.includes('Usado') ? '1' : '0';
+            
+            // Cerrar modal de detalles y abrir modal de edición
+            bootstrap.Modal.getInstance(document.getElementById('ticketDetailModal')).hide();
+            
+            // Configurar valores en el formulario de edición
+            document.getElementById('editTicketId').value = ticketId;
+            document.getElementById('editTicketEmail').value = ticketEmail !== '-' ? ticketEmail : '';
+            document.getElementById('editTicketVendor').value = ticketVendor !== '-' ? ticketVendor : '';
+            document.getElementById('editTicketType').value = ticketType;
+            document.getElementById('editTicketStatus').value = ticketStatus;
+            
+            // Mostrar modal de edición
+            const editModal = new bootstrap.Modal(document.getElementById('editTicketModal'));
+            editModal.show();
+        });
+
+        // Actualizar boleto
+        document.getElementById('updateTicketBtn').addEventListener('click', function() {
+            const ticketId = document.getElementById('editTicketId').value;
+            const email = document.getElementById('editTicketEmail').value.toLowerCase();
+            const vendor = document.getElementById('editTicketVendor').value;
+            const type = document.getElementById('editTicketType').value;
+            const status = document.getElementById('editTicketStatus').value === '1';
+            
+            fetch('/admin/update_ticket', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    id: ticketId,
+                    email: email, 
+                    vendedor: vendor,
+                    vip: type === 'vip',
+                    usado: status
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.response === 'success') {
+                    showNotification('Boleto actualizado con éxito', 'success');
+                    document.getElementById('editTicketModal').querySelector('.btn-close').click();
+                    loadCodes();
+                } else {
+                    showNotification('Error: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error al actualizar boleto', 'danger');
+            });
+        });
         
         // Search functionality for codes
         document.getElementById('codesSearchInput').addEventListener('input', function() {
@@ -1043,6 +1297,64 @@
                     showNotification('Error al marcar el boleto', 'danger');
                 });
         });
+
+        // Configurar modal de confirmación de eliminación
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (window.deleteItemType === 'user') {
+                deleteUser(window.deleteItemId);
+            } else if (window.deleteItemType === 'ticket') {
+                deleteTicket(window.deleteItemId);
+            }
+        });
+
+        // Funciones para eliminar usuarios y boletos
+        function deleteUser(userId) {
+            fetch('/admin/delete_user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: userId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.response === 'success') {
+                    showNotification('Usuario eliminado con éxito', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
+                    loadUsers();
+                } else {
+                    showNotification('Error: ' + (data.message || 'No se pudo eliminar el usuario'), 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error al eliminar usuario', 'danger');
+            });
+        }
+
+        function deleteTicket(ticketId) {
+            fetch('/admin/delete_ticket', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: ticketId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.response === 'success') {
+                    showNotification('Boleto eliminado con éxito', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
+                    loadCodes();
+                } else {
+                    showNotification('Error: ' + (data.message || 'No se pudo eliminar el boleto'), 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error al eliminar boleto', 'danger');
+            });
+        }
     });
 
     // Función para mostrar un panel y ocultar los demás
@@ -1142,15 +1454,51 @@
                             <td>${user.email}</td>
                             <td>${user.is_admin ? '<span class="badge bg-primary">Admin</span>' : '<span class="badge bg-secondary">Usuario</span>'}</td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary me-1" title="Editar">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" title="Eliminar">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-outline-primary edit-user" title="Editar" data-id="${user.id}" data-email="${user.email}" data-is-admin="${user.is_admin}">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-user" title="Eliminar" data-id="${user.id}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
                             </td>
                         `;
                         tableBody.appendChild(row);
+                        
+                        // Agregar event listener para editar usuario
+                        row.querySelector('.edit-user').addEventListener('click', function() {
+                            const userId = this.getAttribute('data-id');
+                            const userEmail = this.getAttribute('data-email');
+                            const isAdmin = this.getAttribute('data-is-admin') === 'true';
+                            
+                            document.getElementById('editUserId').value = userId;
+                            document.getElementById('editUserEmail').value = userEmail;
+                            document.getElementById('editUserPassword').value = '';
+                            document.getElementById('editIsAdmin').checked = isAdmin;
+                            document.getElementById('editAdminCodeContainer').style.display = isAdmin ? 'block' : 'none';
+                            
+                            const editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+                            editUserModal.show();
+                        });
+                        
+                        // Agregar event listener para eliminar usuario
+                        row.querySelector('.delete-user').addEventListener('click', function() {
+                            const userId = this.getAttribute('data-id');
+                            const userEmail = row.cells[1].textContent;
+                            
+                            // Configurar modal de confirmación
+                            document.getElementById('confirmDeleteMessage').textContent = 
+                                `¿Estás seguro que deseas eliminar el usuario "${userEmail}"? Esta acción no se puede deshacer.`;
+                            
+                            // Guardar datos para la eliminación
+                            window.deleteItemType = 'user';
+                            window.deleteItemId = userId;
+                            
+                            // Mostrar modal de confirmación
+                            const confirmModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+                            confirmModal.show();
+                        });
                     });
                 }
             })
@@ -1185,11 +1533,14 @@
                                     <button class="btn btn-sm btn-outline-primary view-details" data-code='${JSON.stringify(code)}' title="Ver detalles">
                                         <i class="bi bi-eye"></i>
                                     </button>
+                                    <button class="btn btn-sm btn-outline-info edit-ticket" data-id="${code.id}" title="Editar boleto">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
                                     ${!code.usado ? `
                                     <button class="btn btn-sm btn-outline-success mark-used" data-id="${code.id}" title="Marcar como usado">
                                         <i class="bi bi-check-lg"></i>
                                     </button>` : ''}
-                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                    <button class="btn btn-sm btn-outline-danger delete-ticket" data-id="${code.id}" title="Eliminar">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -1203,6 +1554,12 @@
                             showTicketDetails(codeData);
                         });
                         
+                        // Añadir event listener para editar boleto
+                        row.querySelector('.edit-ticket').addEventListener('click', function() {
+                            const ticketId = this.getAttribute('data-id');
+                            editTicket(ticketId, code);
+                        });
+                        
                         // Añadir event listener para marcar como usado
                         if (!code.usado) {
                             row.querySelector('.mark-used').addEventListener('click', function() {
@@ -1210,6 +1567,23 @@
                                 markTicketAsUsed(codeId);
                             });
                         }
+                        
+                        // Añadir event listener para eliminar boleto
+                        row.querySelector('.delete-ticket').addEventListener('click', function() {
+                            const ticketId = this.getAttribute('data-id');
+                            
+                            // Configurar modal de confirmación
+                            document.getElementById('confirmDeleteMessage').textContent = 
+                                `¿Estás seguro que deseas eliminar el boleto #${code.boleto}? Esta acción no se puede deshacer.`;
+                            
+                            // Guardar datos para la eliminación
+                            window.deleteItemType = 'ticket';
+                            window.deleteItemId = ticketId;
+                            
+                            // Mostrar modal de confirmación
+                            const confirmModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+                            confirmModal.show();
+                        });
                     });
                     
                     // Load recent activity for dashboard
@@ -1224,6 +1598,20 @@
                 }
             })
             .catch(error => console.error('Error:', error));
+    }
+
+    // Función para editar boleto
+    function editTicket(ticketId, ticketData) {
+        // Configurar el formulario con los datos actuales
+        document.getElementById('editTicketId').value = ticketId;
+        document.getElementById('editTicketEmail').value = ticketData.email || '';
+        document.getElementById('editTicketType').value = ticketData.vip ? 'vip' : 'normal';
+        document.getElementById('editTicketStatus').value = ticketData.usado ? '1' : '0';
+        document.getElementById('editTicketVendor').value = ticketData.vendedor || '';
+        
+        // Mostrar el modal de edición
+        const editModal = new bootstrap.Modal(document.getElementById('editTicketModal'));
+        editModal.show();
     }
     
     // Función para actualizar estadísticas
@@ -1314,7 +1702,7 @@
         if (code.usado) {
             markUsedBtn.style.display = 'none';
         } else {
-            markUsedBtn.style.display = 'block';
+            markUsedBtn.style.display = 'inline-flex';
             markUsedBtn.setAttribute('data-ticket-id', code.id);
         }
         
