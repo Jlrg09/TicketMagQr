@@ -1,5 +1,5 @@
-/.venv
-.env2
+.venv/
+.env22
 /static/css
 /static/icons
 /__pycache__

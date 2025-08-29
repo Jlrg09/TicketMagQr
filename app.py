@@ -18,7 +18,7 @@ from database import (
     engine_codigos, engine_credenciales, engine_config
 )
 from mailManager import sendMessage
-from pdfGeneratorCh import Generator
+from pdfGenerator import Generator
 
 
 load_dotenv()
