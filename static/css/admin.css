@@ -1,0 +1,318 @@
+:root {
+    --primary-color: #3a86ff;
+    --primary-dark: #0051cc;
+    --primary-light: #e9f2ff;
+    --secondary-color: #ff6b6b;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --info-color: #3498db;
+    --danger-color: #e74c3c;
+    --dark-color: #2d3748;
+    --light-color: #f8f9fa;
+    --border-radius: 10px;
+    --card-shadow: 0 6px 15px -3px rgba(0, 0, 0, 0.08);
+    --transition: all 0.2s ease-in-out;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+body.dark-mode .tab-content,
+body.dark-mode .page-header,
+body.dark-mode .card {
+    background-color: #2d3748;
+    border: 1px solid #3a465a;
+}
+
+body.dark-mode .card-header {
+    background-color: #2d3748;
+    border-bottom: 1px solid #3a465a;
+}
+
+body.dark-mode h1, 
+body.dark-mode h3, 
+body.dark-mode h4, 
+body.dark-mode h5,
+body.dark-mode label {
+    color: #e2e8f0;
+}
+
+body.dark-mode .form-control, 
+body.dark-mode .form-select {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+}
+
+body.dark-mode .table th {
+    background-color: #374151;
+    color: #e5e7eb;
+    border-color: #4b5563;
+}
+
+body.dark-mode .table td {
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+.page-header {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.stats-card {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    height: 100%;
+    box-shadow: var(--card-shadow);
+    border-left: 4px solid var(--primary-color);
+    transition: var(--transition);
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.stats-card .icon {
+    font-size: 1.5rem;
+    padding: 10px;
+    border-radius: 50%;
+    margin-bottom: 0.75rem;
+    display: inline-block;
+}
+
+@media (min-width: 768px) {
+    .stats-card {
+        padding: 1.5rem;
+    }
+    .stats-card .icon {
+        font-size: 2rem;
+        padding: 15px;
+        margin-bottom: 1rem;
+    }
+}
+
+.stats-card.primary {
+    border-left-color: var(--primary-color);
+}
+.stats-card.primary .icon {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.stats-card.success {
+    border-left-color: var(--success-color);
+}
+.stats-card.success .icon {
+    background-color: rgba(46, 204, 113, 0.15);
+    color: var(--success-color);
+}
+
+.stats-card.danger {
+    border-left-color: var(--danger-color);
+}
+.stats-card.danger .icon {
+    background-color: rgba(231, 76, 60, 0.15);
+    color: var(--danger-color);
+}
+
+.stats-card.warning {
+    border-left-color: var(--warning-color);
+}
+.stats-card.warning .icon {
+    background-color: rgba(243, 156, 18, 0.15);
+    color: var(--warning-color);
+}
+
+.stats-card h6 {
+    color: #718096;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.stats-card h3 {
+    font-weight: 700;
+    font-size: 1.35rem;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+    .stats-card h6 {
+        font-size: 0.875rem;
+    }
+    .stats-card h3 {
+        font-size: 1.75rem;
+    }
+}
+
+.dark-mode .stats-card {
+    background-color: #2d3748;
+    border: 1px solid #3a465a;
+}
+
+.dark-mode .stats-card h6 {
+    color: #a0aec0;
+}
+
+.dark-mode .stats-card h3 {
+    color: #fff;
+}
+
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #edf2f7;
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+}
+
+.qr-scanner-card {
+    transition: transform 0.3s;
+}
+
+.qr-scanner-card:hover {
+    transform: translateY(-5px);
+}
+
+.qr-scanner-card .icon-bg {
+    font-size: 8rem;
+    opacity: 0.07;
+    position: absolute;
+    right: 20px;
+    bottom: -20px;
+}
+
+/* Animaciones y transiciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fadeIn {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(58, 134, 255, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(58, 134, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(58, 134, 255, 0); }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Notification styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1060;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 280px;
+    max-width: 90%;
+    animation: slideIn 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+.notification-success {
+    background-color: #d1fae5;
+    border-left: 4px solid var(--success-color);
+    color: #065f46;
+}
+
+.notification-danger {
+    background-color: #fee2e2;
+    border-left: 4px solid var(--danger-color);
+    color: #b91c1c;
+}
+
+/* Estilos para el modal de detalles */
+.ticket-details .detail-item {
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 576px) {
+    .ticket-details .detail-item {
+        flex-direction: row;
+    }
+    
+    .ticket-details .detail-item strong {
+        min-width: 120px;
+        margin-right: 8px;
+    }
+}
+
+/* Mejoras para móvil */
+@media (max-width: 576px) {
+    .modal-footer {
+        padding: 0.75rem;
+    }
+    
+    .badge {
+        white-space: normal;
+        text-align: left;
+    }
+    
+    .btn-group-sm > .btn, .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .table th, .table td {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Para asegurar que los botones en tablas sean tocables en móvil */
+.table .btn {
+    min-width: 32px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

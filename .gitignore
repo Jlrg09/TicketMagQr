@@ -1,7 +1,5 @@
 .venv/
 .env22
-/static/css
-/static/icons
 /__pycache__
 archivo.pdf
 *.db

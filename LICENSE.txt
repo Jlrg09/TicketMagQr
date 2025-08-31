@@ -1,0 +1,39 @@
+TicketMagQr Proprietary License
+Copyright (c) 2025 José Luis Romero González
+All rights reserved.
+
+Permission is hereby granted to individuals, organizations, and institutions 
+to use, copy, modify, and distribute this software, provided that:
+
+1. Non-Commercial Use Only
+   - The software may only be used for non-commercial purposes.
+   - Non-commercial purposes include educational, community, cultural, or 
+     charitable events where no profit is obtained.
+   - Any commercial use, including resale, sublicensing, distribution for 
+     profit, or offering as a paid service, is strictly prohibited unless 
+     explicit written permission is granted by the copyright holder.
+
+2. Attribution
+   - Any redistribution of this software, in source or binary form, must 
+     include this license and a clear attribution to the original author:  
+     "TicketMagQr by José Luis Romero González."
+
+3. Modifications
+   - You may modify the software and distribute modified versions, provided 
+     that such modifications are also licensed under the terms of this 
+     license and remain non-commercial.
+   - Modified versions must include a notice that changes were made.
+
+4. No Warranty
+   - THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+     IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+     DEALINGS IN THE SOFTWARE.
+
+Commercial licensing inquiries:
+Contact José Luis Romero González
+Email: devpumation@gmail.com
+
