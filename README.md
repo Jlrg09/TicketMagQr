@@ -157,7 +157,7 @@ cd TicketMagQr
 ### 2\. Instalar Dependencias
 
 ```bash
-pip install flask flask-mail bcrypt pandas qrcode reportlab python-dotenv sqlalchemy xlsxwriter
+pip install -r requirements.txt
 ```
 
 ### 3\. Configuración de Variables de Entorno
@@ -360,4 +360,5 @@ Las contribuciones son bienvenidas. Por favor, sigue estos pasos:
 Para soporte técnico o consultas, contacta a devpumation@gmail.com.
 
 Desarrollado con ❤️ para la gestión eficiente de eventos.
+
 
