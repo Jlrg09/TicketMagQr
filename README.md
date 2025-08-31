@@ -1,4 +1,4 @@
-<h1 align="center">🎟️ TicketMagQr</h1>
+<h1 align="center">🎟️ TicketMagQr 🎟️</h1>
 
 <p align="center">
   <img src="docs/demo.png" alt="TicketMagQr" width="600">
@@ -15,16 +15,16 @@ El sistema ofrece control de acceso basado en roles, con interfaces separadas pa
 
 -----
 
-## 📋 Descripción
+## Descripción
 
 TicketMagQr es una aplicación web completa para la gestión de boletos de eventos con códigos QR. Permite generar, enviar y validar boletos digitales de manera eficiente, con soporte para diferentes tipos de boletos (normal y VIP) y un sistema completo de administración.  
 `app.py:5`
 
 -----
 
-## ✨ Características Principales
+## Características Principales
 
-### 🎫 Gestión de Boletos
+### Gestión de Boletos
 
   - Generación automática de códigos QR únicos para cada boleto  
   - Soporte para boletos VIP y normales con diferentes privilegios  
@@ -32,14 +32,14 @@ TicketMagQr es una aplicación web completa para la gestión de boletos de event
   - Validación en tiempo real mediante escaneo QR  
       `app.py:108-147` `app.py:150-216`
 
-### 👤 Sistema de Usuarios
+### Sistema de Usuarios
 
   - Autenticación segura con contraseñas hasheadas  
   - Roles diferenciados: usuarios normales y administradores  
   - Sesiones persistentes con tiempo de expiración configurable  
       `database.py:36-51` `app.py:219-244`
 
-### 🔧 Panel de Administración
+### Panel de Administración
 
   - Gestión completa de usuarios (crear, editar, eliminar)  
   - Control total de boletos generados  
@@ -48,7 +48,7 @@ TicketMagQr es una aplicación web completa para la gestión de boletos de event
   - Estadísticas en tiempo real  
       `app.py:252-276` `app.py:359-423`
 
-### 📱 Escáner QR Integrado
+### Escáner QR Integrado
 
   - Interfaz web para escaneo de códigos QR  
   - Validación instantánea del estado del boleto  
@@ -57,7 +57,7 @@ TicketMagQr es una aplicación web completa para la gestión de boletos de event
 
 -----
 
-## 🏗️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
 El sistema sigue una arquitectura de aplicación web tradicional con separación entre:
 
@@ -65,13 +65,13 @@ El sistema sigue una arquitectura de aplicación web tradicional con separación
   - **Lógica de negocio**: Controladores y validaciones en Flask.  
   - **Datos**: Persistencia en base de datos SQL.  
 
-### 📌 Diagrama General
+### Diagrama General
 <p align="center">
   <img src="docs/diagrama1.png" alt="TicketMagQr" width="700">
 </p>
 -----
 
-## 🔄 Componentes Clave y Flujo de Datos
+## Componentes Clave y Flujo de Datos
 
 El flujo de datos principal se centra en la **generación y validación de boletos**:
 
@@ -82,13 +82,13 @@ El flujo de datos principal se centra en la **generación y validación de bolet
 5.  En el evento, logística escanea el QR.  
 6.  El sistema valida el estado del boleto y marca su uso.  
 
-### 📌 Diagrama de Flujo
+### Diagrama de Flujo
 <p align="center">
   <img src="docs/diagrama2.png" alt="TicketMagQr" width="700">
 </p>
 -----
 
-## ⚙️ Pila Tecnológica y Dependencias
+## Pila Tecnológica y Dependencias
 
 | Componente              | Tecnología        | Propósito |
 |--------------------------|------------------|-----------|
@@ -103,7 +103,7 @@ El flujo de datos principal se centra en la **generación y validación de bolet
 
 -----
 
-## 🗄️ Esquema de Base de Datos
+## Esquema de Base de Datos
 
 El sistema maneja tres tablas principales:
 
@@ -111,15 +111,15 @@ El sistema maneja tres tablas principales:
 2.  **Tickets** → información del cliente, tipo de entrada, estado.  
 3.  **Configuración** → ajustes globales del sistema.  
 
-### 📌 Diagrama de BD
+### Diagrama de BD
 <p align="center">
   <img src="docs/diagrama3.png" alt="TicketMagQr" width="700">
 </p>
 -----
 
-## 🔑 Flujos de Trabajo Principales
+## Flujos de Trabajo Principales
 
-### 🎫 Flujo de Venta de Entradas
+### Flujo de Venta de Entradas
 
 1.  El vendedor inicia sesión (`/login`) → `app.py [219-244]`  
 2.  Ingresa datos del cliente en el panel → `templates/home.html [62-108]`  
@@ -128,7 +128,7 @@ El sistema maneja tres tablas principales:
 
 -----
 
-### ✅ Flujo de Validación de Tickets
+### Flujo de Validación de Tickets
 
 1.  Logística escanea el código QR → `/scan/<qr>` en `app.py [150-216]`  
 2.  Se consulta en la base de datos el estado del ticket.  
@@ -137,7 +137,7 @@ El sistema maneja tres tablas principales:
 
 -----
 
-### 🛠️ Gestión Administrativa
+### Gestión Administrativa
 
   - Inicio de sesión con credenciales especiales → `app.py [233-240]`  
   - Gestión de usuarios → `/admin/create_user`, `/admin/update_user` → `app.py [252-279]`  
@@ -146,9 +146,9 @@ El sistema maneja tres tablas principales:
 
 -----
 
-## 🚀 Instalación y Configuración
+## Instalación y Configuración
 
-### 🔧 Prerrequisitos
+### Prerrequisitos
 
   - **Python 3.7+**
   - **pip** (gestor de paquetes de Python)
@@ -203,7 +203,7 @@ La aplicación estará disponible en:
 
 -----
 
-## 📧 Configuración de Email
+## Configuración de Email
 
 ### Gmail
 
@@ -218,7 +218,7 @@ El sistema permite configurar el email desde el panel de administración, sobres
 
 -----
 
-## 💻 Uso del Sistema
+## Uso del Sistema
 
 ### Para Vendedores
 
@@ -243,7 +243,7 @@ El sistema permite configurar el email desde el panel de administración, sobres
 
 -----
 
-## 🗄️ Base de Datos
+## Base de Datos
 
 El sistema utiliza tres bases de datos SQLite separadas:
 
@@ -259,7 +259,7 @@ El sistema utiliza tres bases de datos SQLite separadas:
 
 -----
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### Autenticación
 
@@ -285,7 +285,7 @@ El sistema utiliza tres bases de datos SQLite separadas:
 
 -----
 
-## 🔒 Seguridad
+## Seguridad
 
   - Contraseñas hasheadas con **bcrypt**.
   - Validación de sesiones en todas las rutas protegidas.
@@ -295,7 +295,7 @@ El sistema utiliza tres bases de datos SQLite separadas:
 
 -----
 
-## 📱 Características Avanzadas
+## Características Avanzadas
 
 ### Generación de PDFs
 
@@ -309,7 +309,7 @@ Envío automático de boletos con configuración personalizable de asunto y cuer
 
 -----
 
-## 🐛 Solución de Problemas
+## Solución de Problemas
 
 ### Error de Base de Datos
 
@@ -331,7 +331,7 @@ Asegúrate de que la aplicación tenga permisos para crear la carpeta `qrs/` y l
 
 -----
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto está licenciado bajo la **Licencia Propietaria TicketMagQr**.  
 - Uso gratuito permitido únicamente para fines no comerciales (educativos, comunitarios, benéficos).  
@@ -341,7 +341,7 @@ Consulta el archivo [LICENSE](./LICENSE) para más detalles.
 
 -----
 
-## 🤝 Contribución
+## Contribución
 
 Las contribuciones son bienvenidas. Por favor, sigue estos pasos:
 
