@@ -1,7 +1,13 @@
-# 🎟️ TicketMagQr
+<h1 align="center">🎟️ TicketMagQr</h1>
 
 <p align="center">
   <img src="docs/demo.png" alt="TicketMagQr" width="700">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/version-1.0.0-blue.svg">
+  <img src="https://img.shields.io/badge/python-3.7%2B-brightgreen">
+  <img src="https://img.shields.io/badge/license-Propietaria-red">
 </p>
 
 **TicketMagQr** es una plataforma integral de gestión de entradas basada en la web, diseñada para organizadores de eventos que necesitan generar, distribuir y validar boletos utilizando **códigos QR**.  
@@ -360,5 +366,6 @@ Las contribuciones son bienvenidas. Por favor, sigue estos pasos:
 Para soporte técnico o consultas, contacta a devpumation@gmail.com.
 
 Desarrollado con ❤️ para la gestión eficiente de eventos.
+
 
 
