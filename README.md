@@ -1,7 +1,7 @@
 <h1 align="center">🎟️ TicketMagQr</h1>
 
 <p align="center">
-  <img src="docs/demo.png" alt="TicketMagQr" width="700">
+  <img src="docs/demo.png" alt="TicketMagQr" width="500">
 </p>
 
 <p align="center">
@@ -67,7 +67,7 @@ El sistema sigue una arquitectura de aplicación web tradicional con separación
 
 ### 📌 Diagrama General
 <p align="center">
-  <img src="docs/diagrama1.png" alt="TicketMagQr" width="700">
+  <img src="docs/diagrama1.png" alt="TicketMagQr" width="500">
 </p>
 -----
 
@@ -84,7 +84,7 @@ El flujo de datos principal se centra en la **generación y validación de bolet
 
 ### 📌 Diagrama de Flujo
 <p align="center">
-  <img src="docs/diagrama2.png" alt="TicketMagQr" width="700">
+  <img src="docs/diagrama2.png" alt="TicketMagQr" width="500">
 </p>
 -----
 
@@ -113,7 +113,7 @@ El sistema maneja tres tablas principales:
 
 ### 📌 Diagrama de BD
 <p align="center">
-  <img src="docs/diagrama3.png" alt="TicketMagQr" width="700">
+  <img src="docs/diagrama3.png" alt="TicketMagQr" width="500">
 </p>
 -----
 
