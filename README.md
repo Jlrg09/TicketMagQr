@@ -10,14 +10,14 @@
   <img src="https://img.shields.io/badge/license-Propietaria-red">
 </p>
 
-**TicketMagQr** es una plataforma integral de gestión de entradas basada en la web, diseñada para organizadores de eventos que necesitan generar, distribuir y validar boletos utilizando **códigos QR**.  
+**TicketMagQr** es una plataforma integral de gestión de entradas basada en la web, diseñada para organizadores de eventos que necesitan generar, distribuir y validar boletos utilizando **códigos QR**.  
 El sistema ofrece control de acceso basado en roles, con interfaces separadas para vendedores y administradores, permitiendo la venta segura de boletos, la distribución automatizada por correo electrónico y la validación en tiempo real mediante el escaneo de códigos QR.
 
 -----
 
 ## Descripción
 
-TicketMagQr es una aplicación web completa para la gestión de boletos de eventos con códigos QR. Permite generar, enviar y validar boletos digitales de manera eficiente, con soporte para diferentes tipos de boletos (normal y VIP) y un sistema completo de administración.  
+TicketMagQr es una aplicación web completa para la gestión de boletos de eventos con códigos QR. Permite generar, enviar y validar boletos digitales de manera eficiente, con soporte para diferentes tipos de boletos (normal y VIP) y un sistema completo de administración.  
 `app.py:5`
 
 -----
@@ -26,34 +26,34 @@ TicketMagQr es una aplicación web completa para la gestión de boletos de event
 
 ### Gestión de Boletos
 
-  - Generación automática de códigos QR únicos para cada boleto  
-  - Soporte para boletos VIP y normales con diferentes privilegios  
-  - Envío automático por correo electrónico con PDF adjunto  
-  - Validación en tiempo real mediante escaneo QR  
-      `app.py:108-147` `app.py:150-216`
+  - Generación automática de códigos QR únicos para cada boleto  
+  - Soporte para boletos VIP y normales con diferentes privilegios  
+  - Envío automático por correo electrónico con PDF adjunto  
+  - Validación en tiempo real mediante escaneo QR  
+      `app.py:108-147` `app.py:150-216`
 
 ### Sistema de Usuarios
 
-  - Autenticación segura con contraseñas hasheadas  
-  - Roles diferenciados: usuarios normales y administradores  
-  - Sesiones persistentes con tiempo de expiración configurable  
-      `database.py:36-51` `app.py:219-244`
+  - Autenticación segura con contraseñas hasheadas  
+  - Roles diferenciados: usuarios normales y administradores  
+  - Sesiones persistentes con tiempo de expiración configurable  
+      `database.py:36-51` `app.py:219-244`
 
 ### Panel de Administración
 
-  - Gestión completa de usuarios (crear, editar, eliminar)  
-  - Control total de boletos generados  
-  - Configuración de email personalizable  
-  - Exportación de datos a Excel  
-  - Estadísticas en tiempo real  
-      `app.py:252-276` `app.py:359-423`
+  - Gestión completa de usuarios (crear, editar, eliminar)  
+  - Control total de boletos generados  
+  - Configuración de email personalizable  
+  - Exportación de datos a Excel  
+  - Estadísticas en tiempo real  
+      `app.py:252-276` `app.py:359-423`
 
 ### Escáner QR Integrado
 
-  - Interfaz web para escaneo de códigos QR  
-  - Validación instantánea del estado del boleto  
-  - Historial de escaneos recientes  
-      `app.py:449-460`
+  - Interfaz web para escaneo de códigos QR  
+  - Validación instantánea del estado del boleto  
+  - Historial de escaneos recientes  
+      `app.py:449-460`
 
 -----
 
@@ -61,9 +61,9 @@ TicketMagQr es una aplicación web completa para la gestión de boletos de event
 
 El sistema sigue una arquitectura de aplicación web tradicional con separación entre:
 
-  - **Presentación**: Plantillas HTML renderizadas con Jinja2.  
-  - **Lógica de negocio**: Controladores y validaciones en Flask.  
-  - **Datos**: Persistencia en base de datos SQL.  
+  - **Presentación**: Plantillas HTML renderizadas con Jinja2.  
+  - **Lógica de negocio**: Controladores y validaciones en Flask.  
+  - **Datos**: Persistencia en base de datos SQL.  
 
 ### Diagrama General
 <p align="center">
@@ -75,12 +75,12 @@ El sistema sigue una arquitectura de aplicación web tradicional con separación
 
 El flujo de datos principal se centra en la **generación y validación de boletos**:
 
-1.  El vendedor autentica su sesión.  
-2.  Se ingresan los datos del cliente.  
-3.  Se genera un QR único y un PDF personalizado.  
-4.  El sistema envía automáticamente el ticket por correo.  
-5.  En el evento, logística escanea el QR.  
-6.  El sistema valida el estado del boleto y marca su uso.  
+1.  El vendedor autentica su sesión.  
+2.  Se ingresan los datos del cliente.  
+3.  Se genera un QR único y un PDF personalizado.  
+4.  El sistema envía automáticamente el ticket por correo.  
+5.  En el evento, logística escanea el QR.  
+6.  El sistema valida el estado del boleto y marca su uso.  
 
 ### Diagrama de Flujo
 <p align="center">
@@ -90,16 +90,16 @@ El flujo de datos principal se centra en la **generación y validación de bolet
 
 ## Pila Tecnológica y Dependencias
 
-| Componente              | Tecnología        | Propósito |
+| Componente              | Tecnología        | Propósito |
 |--------------------------|------------------|-----------|
-| **Framework Web**        | Flask            | Manejo de solicitudes HTTP, rutas y sesiones |
-| **Base de Datos**        | SQLite           | Persistencia de usuarios, boletos y configuración |
-| **ORM**                  | SQLAlchemy       | Abstracción y gestión de BD |
-| **Autenticación**        | bcrypt           | Hashing y verificación de contraseñas |
-| **Generación de PDF**    | ReportLab        | Creación de tickets con QR en PDF |
-| **Generación de QR**     | qrcode           | Códigos QR únicos por ticket |
-| **Correo Electrónico**   | Flask-Mail (SMTP)| Envío de boletos por correo |
-| **Motor de Plantillas**  | Jinja2           | Renderizado de vistas HTML |
+| **Framework Web**        | Flask            | Manejo de solicitudes HTTP, rutas y sesiones |
+| **Base de Datos**        | SQLite           | Persistencia de usuarios, boletos y configuración |
+| **ORM**                  | SQLAlchemy       | Abstracción y gestión de BD |
+| **Autenticación**        | bcrypt           | Hashing y verificación de contraseñas |
+| **Generación de PDF**    | ReportLab        | Creación de tickets con QR en PDF |
+| **Generación de QR**     | qrcode           | Códigos QR únicos por ticket |
+| **Correo Electrónico**   | Flask-Mail (SMTP)| Envío de boletos por correo |
+| **Motor de Plantillas**  | Jinja2           | Renderizado de vistas HTML |
 
 -----
 
@@ -107,9 +107,9 @@ El flujo de datos principal se centra en la **generación y validación de bolet
 
 El sistema maneja tres tablas principales:
 
-1.  **Usuarios** → credenciales, roles (admin, vendedor).  
-2.  **Tickets** → información del cliente, tipo de entrada, estado.  
-3.  **Configuración** → ajustes globales del sistema.  
+1.  **Usuarios** → credenciales, roles (admin, vendedor).  
+2.  **Tickets** → información del cliente, tipo de entrada, estado.  
+3.  **Configuración** → ajustes globales del sistema.  
 
 ### Diagrama de BD
 <p align="center">
@@ -121,28 +121,28 @@ El sistema maneja tres tablas principales:
 
 ### Flujo de Venta de Entradas
 
-1.  El vendedor inicia sesión (`/login`) → `app.py [219-244]`  
-2.  Ingresa datos del cliente en el panel → `templates/home.html [62-108]`  
-3.  Se genera el QR y el PDF → `pdf_generator.py [23-52]`  
-4.  El sistema envía el ticket al correo → `sendMessage() en app.py [141]`  
+1.  El vendedor inicia sesión (`/login`) → `app.py [219-244]`  
+2.  Ingresa datos del cliente en el panel → `templates/home.html [62-108]`  
+3.  Se genera el QR y el PDF → `pdf_generator.py [23-52]`  
+4.  El sistema envía el ticket al correo → `sendMessage() en app.py [141]`  
 
 -----
 
 ### Flujo de Validación de Tickets
 
-1.  Logística escanea el código QR → `/scan/<qr>` en `app.py [150-216]`  
-2.  Se consulta en la base de datos el estado del ticket.  
-3.  El sistema responde si el boleto es válido o inválido.  
-4.  Se marca el ticket como **usado** para evitar fraudes.  
+1.  Logística escanea el código QR → `/scan/<qr>` en `app.py [150-216]`  
+2.  Se consulta en la base de datos el estado del ticket.  
+3.  El sistema responde si el boleto es válido o inválido.  
+4.  Se marca el ticket como **usado** para evitar fraudes.  
 
 -----
 
 ### Gestión Administrativa
 
-  - Inicio de sesión con credenciales especiales → `app.py [233-240]`  
-  - Gestión de usuarios → `/admin/create_user`, `/admin/update_user` → `app.py [252-279]`  
-  - Configuración global del sistema → `/admin/update_config` → `app.py [318-356]`  
-  - Exportación de datos → `/admin/export_users`, `/admin/export_codes` → `app.py [359-423]`  
+  - Inicio de sesión con credenciales especiales → `app.py [233-240]`  
+  - Gestión de usuarios → `/admin/create_user`, `/admin/update_user` → `app.py [252-279]`  
+  - Configuración global del sistema → `/admin/update_config` → `app.py [318-356]`  
+  - Exportación de datos → `/admin/export_users`, `/admin/export_codes` → `app.py [359-423]`  
 
 -----
 
@@ -352,10 +352,20 @@ Las contribuciones son bienvenidas. Por favor, sigue estos pasos:
 5.  Abre un *Pull Request*.
 
 -----
+##👥 Equipo de Desarrollo
+
+Diseñador UX/UI: Andrés Felipe Angulo Lopez
+
+Programador Backend: José Luis Romero González, Breiner González Machado
+
+Programador Frontend: Juan José Arango Rodriguez
+
+Documentador: Luis Miguel Toscano Sanchez
+
+Soporte Técnico: José Ricardo González Bolaño, Breiner González Machado
 
 ## 📬 Contacto
 
-  - **Autor**: José Luis Romero González
   - **Correo**: joseromerolg@unimagdalena.edu.co
   - **GitHub**: @jlrg09
 
